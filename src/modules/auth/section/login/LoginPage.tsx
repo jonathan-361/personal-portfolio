@@ -1,11 +1,11 @@
-import { Button } from "../../../../components/ui/button";
+import { AuthLayout } from "../../components/AuthLayout";
 
 export default function LoginPage() {
   return (
     <div>
-      <h1>LoginPage</h1>
-      <Button>Iniciar sesión</Button>
-      <Button>Registro</Button>
+      <AuthLayout title="Iniciar sesión" contentPosition="left">
+        <h1>UwU</h1>
+      </AuthLayout>
     </div>
   );
 }
