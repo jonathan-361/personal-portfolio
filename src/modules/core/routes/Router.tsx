@@ -3,6 +3,7 @@ import paths from "./paths/path";
 
 import Login from "../../auth/section/login/LoginPage";
 import RegisterPage from "@/modules/auth/section/register/RegisterPage";
+import HomePage from "@/modules/home/pages/HomePage";
 
 export default function AppRouter() {
   return (
@@ -10,6 +11,7 @@ export default function AppRouter() {
       <Route path={paths.test} element={<Navigate to={paths.login} />} />
       <Route path={paths.login} element={<Login />} />
       <Route path={paths.register} element={<RegisterPage />} />
+      <Route path={paths.home} element={<HomePage />} />
     </Routes>
   );
 }
