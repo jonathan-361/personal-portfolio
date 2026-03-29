@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import { Input } from "@/components/ui/input";
@@ -52,7 +50,7 @@ export default function RegisterPage() {
         <FormField label="Contraseña" name="password" type="password" placeholder="Crea una contraseña segura" value={formData.password} onChange={handleChange} />
 
         <Button type="submit" className="w-full h-10 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 font-semibold shadow-lg mt-6">Registrarse</Button>
-        
+
         <p className="text-center text-sm text-muted-foreground">¿Ya tienes cuenta? <a href="/login" className="text-primary hover:underline font-medium">Inicia sesión</a></p>
       </form>
     </AuthLayout>
