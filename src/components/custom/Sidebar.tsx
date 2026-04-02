@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
+import { authService } from "@/modules/core/services/auth-services/auth.services";
 import paths from "@/modules/core/routes/paths/path";
+
 import type { User } from "@/modules/core/data/dashboard.types";
 import { Button } from "@/components/ui/button";
 
 import HamburgerMenu from "@/assets/svg/hamburger_menu_icon.svg?react";
-
 function getInitials(user: User) {
   return `${user.first_name[0]}${user.last_name[0]}`;
 }
@@ -19,6 +20,11 @@ export function Sidebar({
   toggle: () => void;
 }) {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate(paths.login);
+  };
 
   return (
     <aside
@@ -84,7 +90,11 @@ export function Sidebar({
             {/* Logout */}
             <Button
               onClick={() => {
-                navigate(paths.login);
+                try {
+                  handleLogout();
+                } catch (error) {
+                  console.log("No se pudo cerrar sesión:", error);
+                }
               }}
             >
               Cerrar sesión

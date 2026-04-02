@@ -1,89 +1,80 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router";
-import { AuthLayout } from "../../components/AuthLayout";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "@/modules/auth/schemas/login_schema";
+import { authService } from "@/modules/core/services/auth-services/auth.services";
+
 import paths from "@/modules/core/routes/paths/path";
-
-interface FormFieldProps {
-  label: string;
-  name: string;
-  type: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const FormField = ({
-  label,
-  name,
-  type,
-  placeholder,
-  value,
-  onChange,
-}: FormFieldProps) => (
-  <div className="space-y-2">
-    <Label htmlFor={name} className="text-sm font-medium">
-      {label}
-    </Label>
-    <Input
-      id={name}
-      name={name}
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      required
-      className="bg-background/50 border-input/30 focus:border-primary"
-    />
-  </div>
-);
+import { Button } from "@/components/ui/button";
+import { AuthLayout } from "../../components/AuthLayout";
+import FormField from "@/components/custom/FormField";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const response = await authService.login(data);
+      authService.saveToken(response.token);
+      console.log(`Bienvenido ${response.user.names}`);
+      navigate(paths.home);
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || "Credenciales incorrectas";
+      alert(message);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Datos de login:", formData);
-    navigate(paths.home);
-  };
+  const emailField = register("email");
+  const passwordField = register("password");
 
   return (
-    <AuthLayout title="Iniciar sesión" contentPosition="left">
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <AuthLayout title="Iniciar sesión">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <FormField
-          label="Correo Electrónico"
-          name="email"
+          label="Correo electrónico"
           type="email"
-          placeholder="tu@gmail.com"
-          value={formData.email}
-          onChange={handleChange}
+          placeholder="Escribe un correo"
+          name={emailField.name}
+          onChange={emailField.onChange}
+          onBlur={emailField.onBlur}
+          inputRef={emailField.ref}
+          error={errors.email?.message}
         />
 
         <FormField
           label="Contraseña"
-          name="password"
           type="password"
-          placeholder="Ingresa tu contraseña"
-          value={formData.password}
-          onChange={handleChange}
+          placeholder="Escribe tu contraseña"
+          name={passwordField.name}
+          onChange={passwordField.onChange}
+          onBlur={passwordField.onBlur}
+          inputRef={passwordField.ref}
+          error={errors.password?.message}
         />
 
-        <Button type="submit" className="w-full h-10 mt-6">
+        <div>
+          <p className="text-right text-primary hover:underline font-medium">
+            <Link to={paths.changePassword}>¿Olvidaste tu contraseña?</Link>
+          </p>
+        </div>
+
+        <Button type="submit" className="w-full h-10">
           Iniciar sesión
         </Button>
-
+      </form>
+      <div>
         <p className="text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
           <Link
@@ -93,7 +84,7 @@ export default function LoginPage() {
             Regístrate
           </Link>
         </p>
-      </form>
+      </div>
     </AuthLayout>
   );
 }
