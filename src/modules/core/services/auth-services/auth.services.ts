@@ -12,7 +12,7 @@ export const authService = {
    * @param data - Datos validados por loginSchema
    */
   login: async (data: LoginFormData): Promise<LoginResponse> => {
-    return await api.post<LoginResponse>("/auth/inicio_sesion", data);
+    return await api.post<LoginResponse>("/auth/login", data);
   },
 
   /**
@@ -21,7 +21,7 @@ export const authService = {
    */
   register: async (data: RegisterFormData): Promise<RegisterResponse> => {
     const { repeat_password, ...dataToSend } = data;
-    return await api.post<RegisterResponse>("/auth/registro", dataToSend);
+    return await api.post<RegisterResponse>("/auth/register", dataToSend);
   },
 
   /**

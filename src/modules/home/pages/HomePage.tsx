@@ -16,6 +16,7 @@ import type {
   Task,
   Experience,
 } from "@/modules/core/data/dashboard.types";
+import { toast } from "sonner";
 
 // Helpers
 function formatDate(dateStr: string) {

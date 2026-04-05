@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "@/modules/core/context/AuthContext";
 import {
   loginSchema,
   type LoginFormData,
@@ -14,6 +15,8 @@ import FormField from "@/components/custom/FormField";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -26,7 +29,8 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       const response = await authService.login(data);
-      authService.saveToken(response.token);
+      login(response.token);
+
       console.log(`Bienvenido ${response.user.names}`);
       navigate(paths.home);
     } catch (error: any) {

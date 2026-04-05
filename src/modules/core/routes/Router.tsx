@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router";
 import paths from "./paths/path";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 import LoginPage from "../../auth/section/login/LoginPage";
 import RegisterPage from "@/modules/auth/section/register/RegisterPage";
@@ -18,12 +19,17 @@ import { Error503 } from "@/components/custom/errors/error503";
 export default function AppRouter() {
   return (
     <Routes>
+      {/*Rutas públicas*/}
       <Route path={paths.test2} element={<Error404 />} />
       <Route path={paths.test} element={<Navigate to={paths.login} />} />
       <Route path={paths.login} element={<LoginPage />} />
       <Route path={paths.register} element={<RegisterPage />} />
       <Route path={paths.changePassword} element={<ChangePassword />} />
-      <Route path={paths.home} element={<HomePage />} />
+
+      {/*Rutas privadas*/}
+      <Route element={<ProtectedRoute />}>
+        <Route path={paths.home} element={<HomePage />} />
+      </Route>
     </Routes>
   );
 }
