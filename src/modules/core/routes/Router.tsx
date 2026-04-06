@@ -30,7 +30,6 @@ export default function AppRouter() {
       <Route path={paths.error501} element={<Error501 />} />
       <Route path={paths.error502} element={<Error502 />} />
       <Route path={paths.error503} element={<Error503 />} />
-      
     </Routes>
   );
 }
