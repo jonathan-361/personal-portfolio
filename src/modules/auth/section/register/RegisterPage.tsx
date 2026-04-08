@@ -1,7 +1,7 @@
-<<<<<<< HEAD
-=======
+
+
 import { useForm } from "react-hook-form";
->>>>>>> 1c63bba4a1bf91dd72bd2f1e2cad474037f51b62
+
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
@@ -130,7 +130,7 @@ function RegisterPage() {
           />
         </div>
 
-<<<<<<< HEAD
+
         <FormField label="Nombre Completo" name="name" type="text" placeholder="Tu nombre aquí" value={formData.name} onChange={handleChange} />
 
         <FormField label="Correo Electrónico" name="email" type="email" placeholder="tu@gmail.com" value={formData.email} onChange={handleChange} />
@@ -140,11 +140,11 @@ function RegisterPage() {
         <Button type="submit" className="w-full h-10 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 font-semibold shadow-lg mt-6">Registrarse</Button>
 
         <p className="text-center text-sm text-muted-foreground">¿Ya tienes cuenta? <a href="/login" className="text-primary hover:underline font-medium">Inicia sesión</a></p>
-=======
+
         <Button type="submit" className="w-full h-10 col-span-2">
           Crear cuenta
         </Button>
->>>>>>> 1c63bba4a1bf91dd72bd2f1e2cad474037f51b62
+
       </form>
       <div>
         <p className="text-center text-sm text-muted-foreground">
