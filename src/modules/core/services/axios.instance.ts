@@ -4,9 +4,6 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-/**
- * Configuración base de la instancia
- */
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "http://localhost:3000/api",
   timeout: 15000,
@@ -17,7 +14,7 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 /**
- * Interceptor de Peticiones
+ * Interceptor de peticiones
  */
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -33,7 +30,7 @@ axiosInstance.interceptors.request.use(
 );
 
 /**
- * Interceptor de Respuestas
+ * Interceptor de respuestas
  */
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -45,9 +42,6 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-/**
- * Métodos HTTP generalizados
- */
 export const api = {
   get: <T>(url: string, config?: AxiosRequestConfig) =>
     axiosInstance.get<T>(url, config).then((res) => res.data),

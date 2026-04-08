@@ -16,3 +16,7 @@ export interface LoginResponse {
 export interface RegisterResponse {
   user: User;
 }
+
+export interface ChangePasswordResponse {
+  message: string;
+}

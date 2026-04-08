@@ -8,7 +8,7 @@ import type {
 
 export const authService = {
   /**
-   * Petición de Login
+   * Iniciar sesión
    * @param data - Datos validados por loginSchema
    */
   login: async (data: LoginFormData): Promise<LoginResponse> => {
@@ -16,7 +16,7 @@ export const authService = {
   },
 
   /**
-   * Petición de Registro
+   * Registrar al usuario
    * @param data - Datos validados por registerSchema
    */
   register: async (data: RegisterFormData): Promise<RegisterResponse> => {
@@ -25,7 +25,7 @@ export const authService = {
   },
 
   /**
-   * Utilidad para persistir el token manualmente si fuera necesario
+   * Utilidad para persistir el token manualmente en caso de ser necesario
    */
   saveToken: (token: string) => {
     localStorage.setItem("auth_token", token);

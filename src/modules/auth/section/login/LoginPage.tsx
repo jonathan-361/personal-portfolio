@@ -1,84 +1,79 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 import { useAuth } from "@/modules/core/context/AuthContext";
 import {
   loginSchema,
   type LoginFormData,
 } from "@/modules/auth/schemas/login_schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
-
 import paths from "@/modules/core/routes/paths/path";
 import { Button } from "@/components/ui/button";
 import { AuthLayout } from "../../components/AuthLayout";
 import FormField from "@/components/custom/FormField";
+import Loading from "@/components/custom/Loading";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: "onChange",
+    mode: "onTouched",
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    const toastId = toast.loading("Verificando credenciales...");
+
     try {
       const response = await authService.login(data);
       login(response.token);
-
-      console.log(`Bienvenido ${response.user.names}`);
+      toast.success(`¡Bienvenido de nuevo!`, { id: toastId });
       navigate(paths.home);
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || "Credenciales incorrectas";
-      alert(message);
+      toast.error(error.response?.data?.message || "Error", { id: toastId });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const emailField = register("email");
-  const passwordField = register("password");
-
   return (
     <AuthLayout title="Iniciar sesión">
+      {isLoading && <Loading />}
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <FormField
           label="Correo electrónico"
           type="email"
           placeholder="Escribe un correo"
-          name={emailField.name}
-          onChange={emailField.onChange}
-          onBlur={emailField.onBlur}
-          inputRef={emailField.ref}
+          {...register("email")}
           error={errors.email?.message}
         />
-
         <FormField
           label="Contraseña"
           type="password"
           placeholder="Escribe tu contraseña"
-          name={passwordField.name}
-          onChange={passwordField.onChange}
-          onBlur={passwordField.onBlur}
-          inputRef={passwordField.ref}
-          error={errors.password?.message}
+          {...register("password")}
+          error={touchedFields.password ? errors.password?.message : undefined}
         />
 
-        <div>
-          <p className="text-right text-primary hover:underline font-medium">
-            <Link to={paths.changePassword}>¿Olvidaste tu contraseña?</Link>
-          </p>
-        </div>
+        <p className="text-right text-primary hover:underline font-medium text-sm">
+          <Link to={paths.changePassword}>¿Olvidaste tu contraseña?</Link>
+        </p>
 
-        <Button type="submit" className="w-full h-10">
+        <Button type="submit" className="w-full h-10" disabled={isLoading}>
           Iniciar sesión
         </Button>
       </form>
-      <div>
+      <div className="mt-4">
         <p className="text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
           <Link
