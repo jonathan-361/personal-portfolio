@@ -53,7 +53,7 @@ export function Sidebar({ user }: { user: User }) {
 
   const navItems = [
     { label: "Inicio", path: paths.home, icon: Home },
-    { label: "Notas", path: paths.notes, icon: StickyNote },
+    { label: "Apuntes y notas", path: paths.notes, icon: StickyNote },
     { label: "Logros", path: paths.achievement, icon: Trophy },
     { label: "Actividades", path: paths.tasks, icon: CheckSquare },
     { label: "Experiencias", path: paths.experiences, icon: Briefcase },
@@ -65,10 +65,10 @@ export function Sidebar({ user }: { user: User }) {
 
       <aside
         className={`
-          bg-black text-white flex flex-col
-          transition-all duration-300 ease-in-out
-          ${isOpen ? "w-64" : "w-20"} 
-        `}
+    bg-black text-white flex flex-col h-screen sticky top-0
+    transition-all duration-300 ease-in-out z-50
+    ${isOpen ? "w-64" : "w-20"} 
+  `}
       >
         {/* Header */}
         <div
