@@ -7,6 +7,11 @@ import RegisterPage from "@/modules/auth/section/register/RegisterPage";
 
 import ChangePassword from "@/modules/auth/section/change-password/ChangePassword";
 import HomePage from "@/modules/home/pages/HomePage";
+import NotesPage from "@/modules/notes/pages/NotesPage";
+import TasksPage from "@/modules/tasks/pages/TasksPage";
+import AchievementsPage from "@/modules/achievements/pages/AchievementsPage";
+import ExperiencesPage from "@/modules/experiences/pages/ExperiencesPage";
+
 import { Error400 } from "@/components/custom/errors/error400";
 import { Error401 } from "@/components/custom/errors/error401";
 import { Error403 } from "@/components/custom/errors/error403";
@@ -29,6 +34,10 @@ export default function AppRouter() {
       {/*Rutas privadas*/}
       <Route element={<ProtectedRoute />}>
         <Route path={paths.home} element={<HomePage />} />
+        <Route path={paths.notes} element={<NotesPage />} />
+        <Route path={paths.tasks} element={<TasksPage />} />
+        <Route path={paths.achievement} element={<AchievementsPage />} />
+        <Route path={paths.experiences} element={<ExperiencesPage />} />
       </Route>
     </Routes>
   );

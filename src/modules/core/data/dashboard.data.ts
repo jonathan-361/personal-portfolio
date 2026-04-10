@@ -1,5 +1,3 @@
-// dashboard.data.ts
-
 import type {
   User,
   Note,
