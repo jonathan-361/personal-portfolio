@@ -44,10 +44,30 @@ export const tasksMock: Task[] = [
   {
     id: 1,
     title: "Entregar práctica de BD",
-    description: "Normalización y SQL",
+    description:
+      "Normalización y SQLdasdasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaadasdasdasdsaaaaaaaaaa",
     user_id: 1,
     task_date: "2025-03-28",
+    status: "PENDIENTE",
     created_at: "2025-03-20T00:00:00Z",
+  },
+  {
+    id: 2,
+    title: "Estudiar para examen de Redes",
+    description: "Modelos OSI y TCP/IP",
+    user_id: 1,
+    task_date: "2025-04-05",
+    status: "PROCESO",
+    created_at: "2025-03-22T00:00:00Z",
+  },
+  {
+    id: 3,
+    title: "Configurar Servidor Nginx",
+    description: "Proxy inverso y SSL",
+    user_id: 1,
+    task_date: "2025-03-15",
+    status: "COMPLETADO",
+    created_at: "2025-03-10T00:00:00Z",
   },
 ];
 

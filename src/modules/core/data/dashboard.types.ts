@@ -1,3 +1,5 @@
+export type TaskStatus = "PENDIENTE" | "PROCESO" | "COMPLETADO";
+
 export interface User {
   id: number;
   first_name: string;
@@ -33,6 +35,7 @@ export interface Task {
   description: string | null;
   user_id: number;
   task_date: string | null;
+  status: TaskStatus;
   created_at: string;
 }
 

@@ -1,33 +1,30 @@
 import { useState } from "react";
-import { Sidebar } from "@/components/custom/Sidebar";
+import { SectionLayout } from "@/components/custom/SectionLayout";
+import { Plus } from "lucide-react";
+import { userMock } from "@/modules/core/data/dashboard.data";
 
-import {
-  userMock,
-  notesMock,
-  achievementsMock,
-  tasksMock,
-  experiencesMock,
-} from "@/modules/core/data/dashboard.data";
-
-import type {
-  User,
-  Note,
-  Achievement,
-  Task,
-  Experience,
-} from "@/modules/core/data/dashboard.types";
+import type { User } from "@/modules/core/data/dashboard.types";
 
 export default function AchievementsPage() {
   const [user] = useState<User>(userMock);
-  const [notes] = useState<Note[]>(notesMock);
-  const [achievements] = useState<Achievement[]>(achievementsMock);
-  const [tasks] = useState<Task[]>(tasksMock);
-  const [experiences] = useState<Experience[]>(experiencesMock);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar user={user} />
-      <h1>Achievements Pages</h1>
-    </div>
+    <SectionLayout
+      user={user}
+      title="Logros"
+      subtitle="Gestión de logros personales, empresariales o académicos"
+      buttonLabel="Nuevo logro"
+      onButtonClick={() => console.log("Nuevo logro")}
+    >
+      <div className="max-w-4xl mx-auto">
+        {/* Aquí iría tu lista de logros */}
+        <div className="border-2 border-dashed border-gray-800 rounded-2xl h-60 flex flex-col items-center justify-center gap-4 text-center p-6 bg-gray-900/20 mt-4">
+          <div className="p-4 rounded-full bg-gray-900 border border-gray-800 text-gray-600">
+            <Plus className="w-8 h-8" />
+          </div>
+          <p className="text-gray-400 font-semibold">No hay logros aún</p>
+        </div>
+      </div>
+    </SectionLayout>
   );
 }
