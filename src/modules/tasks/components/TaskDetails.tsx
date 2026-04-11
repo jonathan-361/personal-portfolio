@@ -41,7 +41,7 @@ export function TaskDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] w-[95vw] bg-black border-gray-800 text-white shadow-2xl border border-white/20 overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-125 w-[95vw] bg-black  text-white shadow-2xl border border-white/20 overflow-hidden">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <span
@@ -56,7 +56,7 @@ export function TaskDetailsModal({
               {task.status}
             </span>
           </div>
-          <DialogTitle className="text-2xl font-bold tracking-tight text-white break-words">
+          <DialogTitle className="text-2xl font-bold tracking-tight text-white wrap-break-words">
             Detalles de la Actividad
           </DialogTitle>
           <DialogDescription className="text-gray-400">
@@ -64,7 +64,7 @@ export function TaskDetailsModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-4 px-1">
+        <div className="space-y-5 py-4 overflow-y-auto max-h-[60vh] px-1 custom-scrollbar">
           <div className="space-y-2">
             <Label className="text-xs uppercase text-gray-500 font-black">
               Título
@@ -72,7 +72,7 @@ export function TaskDetailsModal({
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-gray-900/50 border-gray-800 focus:ring-blue-600 text-white w-full max-w-full truncate"
+              className="bg-gray-900/50 border-gray-800 focus:ring-blue-600 text-white w-full max-w-full"
             />
           </div>
 
@@ -114,14 +114,7 @@ export function TaskDetailsModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Añade detalles sobre esta actividad..."
-              className="
-                bg-gray-900/50 border-gray-800 text-white w-full max-w-full 
-                min-h-[150px] max-h-[250px] 
-                resize-none 
-                break-all overflow-wrap-anywhere whitespace-pre-wrap
-                overflow-y-auto custom-scrollbar 
-                focus-visible:ring-blue-600 px-3 py-2
-              "
+              className="bg-gray-900/50 border-gray-800 min-h-30 resize-none text-white w-full max-w-full wrap-break-word whitespace-pre-wrap"
             />
           </div>
         </div>

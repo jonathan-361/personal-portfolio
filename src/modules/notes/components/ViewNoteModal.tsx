@@ -31,7 +31,7 @@ export function ViewNoteModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] bg-black border-gray-800 text-white shadow-[0_0_50px_rgba(0,0,0,0.8)] focus:outline-none overflow-hidden">
+      <DialogContent className="sm:max-w-137.5 bg-black border-gray-800 text-white shadow-[0_0_50px_rgba(0,0,0,0.8)] focus:outline-none overflow-hidden">
         <DialogHeader className="space-y-4">
           <div className="flex items-center justify-between pr-8">
             <Badge
@@ -50,7 +50,7 @@ export function ViewNoteModal({
             </div>
           </div>
 
-          <DialogTitle className="text-2xl font-bold break-words leading-tight pr-8">
+          <DialogTitle className="text-2xl font-bold wrap-break-word leading-tight pr-8">
             {note.title}
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -60,7 +60,7 @@ export function ViewNoteModal({
 
         <div className="mt-4 border-t border-gray-900 pt-6">
           <div className="max-h-[45vh] overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
-            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-all md:break-words text-base">
+            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-all md:wrap-break-word text-base">
               {note.content || "Sin contenido adicional."}
             </p>
           </div>

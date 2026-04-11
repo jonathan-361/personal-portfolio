@@ -9,6 +9,7 @@ const paths = {
   achievement: "/achievement",
   tasks: "/tasks",
   experiences: "/experiences",
+  profile: "/profile",
 };
 
 export default paths;

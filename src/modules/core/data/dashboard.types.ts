@@ -1,4 +1,5 @@
 export type TaskStatus = "PENDIENTE" | "PROCESO" | "COMPLETADO";
+export type AchievementCategory = "Académico" | "Profesional" | "Personal";
 
 export interface User {
   id: number;
@@ -7,6 +8,7 @@ export interface User {
   second_last_name: string;
   email: string;
   role: "ADMIN" | "USER";
+  image?: string;
   created_at: string;
 }
 
@@ -24,6 +26,7 @@ export interface Achievement {
   id: number;
   title: string;
   description: string | null;
+  type: AchievementCategory;
   user_id: number;
   achieved_at: string | null;
   created_at: string;

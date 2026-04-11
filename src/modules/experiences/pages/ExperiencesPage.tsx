@@ -39,8 +39,8 @@ export default function ExperiencesPage() {
       showButton={!isAsideOpen}
     >
       <div className="relative max-w-4xl mx-auto">
-        {/* Línea de tiempo (Timeline) */}
-        <div className="absolute left-[23px] top-4 bottom-10 w-[2px] bg-gradient-to-b from-blue-600 via-gray-800 to-transparent" />
+        {/* Línea de tiempo */}
+        <div className="absolute left-5.75 top-4 bottom-10 w-0.5 bg-linear-to-b from-blue-600 via-gray-800 to-transparent" />
 
         <div className="space-y-8 pb-20">
           {sortedExperiences.map((exp) => (

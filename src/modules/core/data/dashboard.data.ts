@@ -8,10 +8,10 @@ import type {
 
 export const userMock: User = {
   id: 1,
-  first_name: "Ana",
-  last_name: "Navarrete",
+  first_name: "Jonathan",
+  last_name: "UwU",
   second_last_name: "López",
-  email: "ana@estudiante.uady.mx",
+  email: "22090164@estudiante.uady.mx",
   role: "USER",
   created_at: "2025-03-01T10:00:00Z",
 };
@@ -27,16 +27,98 @@ export const notesMock: Note[] = [
     created_at: "2025-03-24T10:00:00Z",
     updated_at: "2025-03-24T10:00:00Z",
   },
+  {
+    id: 2,
+    title: "Algoritmos de ordenamiento2",
+    content:
+      "Quicksort vs Mergesort hdjashdkjadhjashjdhjashkjdhkjashdjkhaskjhdkjashkhdkjhsajhdkjsakdhasjdhkjashdkjhasjhdjkahsjdhjkashdjhasjhdkjashkjdhkjashdjkhaskjhdkjashdkjhaskjdhjashdjhaskjd",
+    type: "Apunte",
+    user_id: 1,
+    created_at: "2026-03-24T10:00:00Z",
+    updated_at: "2025-03-24T10:00:00Z",
+  },
+  {
+    id: 3,
+    title: "Algoritmos de ordenamiento3",
+    content:
+      "Quicksort vs Mergesort hdjashdkjadhjashjdhjashkjdhkjashdjkhaskjhdkjashkhdkjhsajhdkjsakdhasjdhkjashdkjhasjhdjkahsjdhjkashdjhasjhdkjashkjdhkjashdjkhaskjhdkjashdkjhaskjdhjashdjhaskjd",
+    type: "Nota",
+    user_id: 1,
+    created_at: "2026-04-02T10:00:00Z",
+    updated_at: "2025-03-24T10:00:00Z",
+  },
+  {
+    id: 4,
+    title: "Algoritmos de ordenamiento",
+    content:
+      "Quicksort vs Mergesort hdjashdkjadhjashjdhjashkjdhkjashdjkhaskjhdkjashkhdkjhsajhdkjsakdhasjdhkjashdkjhasjhdjkahsjdhjkashdjhasjhdkjashkjdhkjashdjkhaskjhdkjashdkjhaskjdhjashdjhaskjd",
+    type: "Nota",
+    user_id: 1,
+    created_at: "2025-03-24T10:00:00Z",
+    updated_at: "2025-03-24T10:00:00Z",
+  },
 ];
 
 export const achievementsMock: Achievement[] = [
   {
     id: 1,
     title: "Hackathon UADY 2025 — 2° lugar",
-    description: "Proyecto de movilidad urbana",
+    description:
+      "Proyecto de movilidad urbana utilizando React Native y algoritmos de optimización de rutas.",
+    type: "Académico",
     user_id: 1,
     achieved_at: "2025-03-15",
     created_at: "2025-03-15T00:00:00Z",
+  },
+  {
+    id: 2,
+    title: "Certificación AWS Cloud Practitioner",
+    description:
+      "Validación de conocimientos fundamentales en la infraestructura global de Amazon Web Services.",
+    type: "Profesional",
+    user_id: 1,
+    achieved_at: "2026-02-10",
+    created_at: "2026-02-10T00:00:00Z",
+  },
+  {
+    id: 3,
+    title: "Voluntariado 'Código para Todos'",
+    description:
+      "Enseñanza de lógica de programación básica a jóvenes de comunidades rurales.",
+    type: "Personal",
+    user_id: 1,
+    achieved_at: "2025-11-20",
+    created_at: "2025-11-20T00:00:00Z",
+  },
+  {
+    id: 4,
+    title: "Mejor Promedio Generación 2021-2025",
+    description:
+      "Reconocimiento por desempeño académico sobresaliente en la Licenciatura de Software.",
+    type: "Académico",
+    user_id: 1,
+    achieved_at: "2025-12-15",
+    created_at: "2025-12-15T00:00:00Z",
+  },
+  {
+    id: 5,
+    title: "Ascenso a Desarrollador Fullstack Jr.",
+    description:
+      "Promoción interna en SoftTech Solutions tras completar satisfactoriamente el periodo de prueba.",
+    type: "Profesional",
+    user_id: 1,
+    achieved_at: "2026-01-05",
+    created_at: "2026-01-05T00:00:00Z",
+  },
+  {
+    id: 6,
+    title: "Maratón de Mérida 2026",
+    description:
+      "Finalización exitosa de los 42km con un tiempo oficial de 3h 45m.",
+    type: "Personal",
+    user_id: 1,
+    achieved_at: "2026-01-15",
+    created_at: "2026-01-15T00:00:00Z",
   },
 ];
 

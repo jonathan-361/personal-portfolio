@@ -5,7 +5,7 @@ import type { User } from "@/modules/core/data/dashboard.types";
 
 interface SectionLayoutProps {
   user: User;
-  title: string;
+  title?: string;
   subtitle?: string;
   buttonLabel?: string;
   onButtonClick?: () => void;

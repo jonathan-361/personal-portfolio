@@ -29,7 +29,7 @@ export default function TasksPage() {
         {columns.map((column) => (
           <div
             key={column.status}
-            className="flex flex-col gap-4 bg-gray-900/10 p-4 rounded-2xl border border-gray-900/50 min-h-[400px]"
+            className="flex flex-col gap-4 bg-gray-900/10 p-4 rounded-2xl border border-gray-900/50 min-h-100"
           >
             <div className="flex justify-between items-center px-2">
               <span className="text-[10px] font-black uppercase text-gray-500 tracking-tighter">
@@ -57,9 +57,8 @@ export default function TasksPage() {
         ))}
       </div>
 
-      {/* Formulario lateral hecho con un aside */}
       {isAsideOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-100 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <TaskFormAside onClose={() => setIsAsideOpen(false)} />
         </div>
       )}

@@ -68,7 +68,7 @@ export function NoteFormModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="sm:max-w-[425px] bg-black border-gray-800 text-white border border-white/50
+        className="sm:max-w-106.25 bg-black text-white border border-white/50
           shadow-[0_0_60px_rgba(255,255,255,0.1)] focus:outline-none"
       >
         <DialogHeader>
@@ -139,7 +139,7 @@ export function NoteFormModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Escribe aquí el contenido..."
               required
-              className="bg-gray-900 border-gray-800 focus-visible:ring-blue-600 min-h-[150px] w-full break-all whitespace-pre-wrap overflow-y-auto resize-none"
+              className="bg-gray-900 border-gray-800 focus-visible:ring-blue-600 min-h-37.5 w-full break-all whitespace-pre-wrap overflow-y-auto resize-none"
             />
           </div>
 

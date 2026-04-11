@@ -11,6 +11,7 @@ import NotesPage from "@/modules/notes/pages/NotesPage";
 import TasksPage from "@/modules/tasks/pages/TasksPage";
 import AchievementsPage from "@/modules/achievements/pages/AchievementsPage";
 import ExperiencesPage from "@/modules/experiences/pages/ExperiencesPage";
+import ProfilePage from "@/modules/profile/pages/ProfilePage";
 
 import { Error400 } from "@/components/custom/errors/error400";
 import { Error401 } from "@/components/custom/errors/error401";
@@ -38,6 +39,7 @@ export default function AppRouter() {
         <Route path={paths.tasks} element={<TasksPage />} />
         <Route path={paths.achievement} element={<AchievementsPage />} />
         <Route path={paths.experiences} element={<ExperiencesPage />} />
+        <Route path={paths.profile} element={<ProfilePage />} />
       </Route>
     </Routes>
   );
