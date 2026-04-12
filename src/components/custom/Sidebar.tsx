@@ -65,6 +65,8 @@ export function Sidebar({ user }: { user: User }) {
     );
   }
 
+  const userRole = user?.role?.toUpperCase();
+
   const studentItems = [
     { label: "Inicio", path: paths.home, icon: Home },
     { label: "Apuntes y notas", path: paths.notes, icon: StickyNote },
@@ -78,7 +80,7 @@ export function Sidebar({ user }: { user: User }) {
     { label: "Directorio", path: paths.adminDirectory, icon: Users },
   ];
 
-  const navItems = user.role === "ADMIN" ? adminItems : studentItems;
+  const navItems = userRole === "ADMIN" ? adminItems : studentItems;
 
   return (
     <>
@@ -98,8 +100,8 @@ export function Sidebar({ user }: { user: User }) {
         >
           {isOpen && (
             <div className="animate-in fade-in duration-500">
-              <h2 className="text-xl font-black tracking-tighter uppercase italic bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-                {user.role === "ADMIN" ? "Admin Panel" : "Portafolio"}
+              <h2 className="...">
+                {userRole === "ADMIN" ? "Admin Panel" : "Portafolio"}
               </h2>
             </div>
           )}

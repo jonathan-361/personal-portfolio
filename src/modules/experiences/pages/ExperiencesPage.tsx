@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
-import { ExperienceFormAside } from "../components/ExperienceFormAside";
-import { ExperienceCard } from "../components/ExperienceCard";
-import { userMock, experiencesMock } from "@/modules/core/data/dashboard.data";
-import type { User, Experience } from "@/modules/core/data/dashboard.types";
+import { ExperienceFormAside } from "@/modules/experiences/components/ExperienceFormAside";
+import { ExperienceCard } from "@/modules/experiences/components/ExperienceCard";
+import { useUserStore } from "@/modules/core/store/user.store";
+import { experiencesMock } from "@/modules/core/data/dashboard.data";
+import type { Experience } from "@/modules/core/data/dashboard.types";
 
 export default function ExperiencesPage() {
-  const [user] = useState<User>(userMock);
+  const { user } = useUserStore();
   const [isAsideOpen, setIsAsideOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] =
     useState<Experience | null>(null);
@@ -18,6 +19,8 @@ export default function ExperiencesPage() {
       return timeB - timeA;
     });
   }, []);
+
+  if (!user) return null;
 
   const handleCreateNew = () => {
     setSelectedExperience(null);
@@ -31,7 +34,7 @@ export default function ExperiencesPage() {
 
   return (
     <SectionLayout
-      user={user}
+      user={user as any}
       title="Experiencias"
       subtitle="Historial profesional y académico"
       buttonLabel="Nueva Experiencia"

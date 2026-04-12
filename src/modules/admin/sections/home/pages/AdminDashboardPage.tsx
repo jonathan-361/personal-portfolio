@@ -1,19 +1,16 @@
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { useAuth } from "@/modules/core/context/AuthContext";
-// IMPORTANTE: Usamos 'import type' y renombramos para evitar confusión
-import type { User as DashboardUser } from "@/modules/core/data/dashboard.types";
+import { useUserStore } from "@/modules/core/store/user.store";
 
 export function AdminDashboardPage() {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { user } = useUserStore();
 
-  if (!user) return null;
-
-  // Hacemos una conversión segura pasando por 'unknown' como sugirió el error
-  const adminUser = user as unknown as DashboardUser;
+  if (!isAuthenticated || !user) return null;
 
   return (
     <SectionLayout
-      user={adminUser}
+      user={user}
       title="Dashboard Administrativo"
       subtitle="Resumen general del sistema y estadísticas globales"
       showButton={false}

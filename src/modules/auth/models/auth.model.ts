@@ -1,13 +1,6 @@
-import type { ResetPasswordFormData } from "../schemas/reset.password";
-
-export interface User {
-  id: string;
-  names: string;
-  first_last_name: string;
-  second_last_name: string;
-  email: string;
-  role?: string;
-}
+import type { ResetPasswordFormData } from "@/modules/auth/schemas/reset.password";
+// Importamos el User real
+import type { User } from "@/modules/home/models/user.model";
 
 export interface LoginResponse {
   token: string;

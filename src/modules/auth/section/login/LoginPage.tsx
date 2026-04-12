@@ -9,18 +9,19 @@ import {
   type LoginFormData,
 } from "@/modules/auth/schemas/login.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
-import { getErrorMessage } from "@/modules/core/error/handle.error";
+import { getErrorMessage } from "@/modules/core/error/handle.error"; // Asegúrate de usarlo abajo
 import paths from "@/modules/core/routes/paths/path";
 import { Button } from "@/components/ui/button";
 import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import FormField from "@/components/custom/FormField";
 import Loading from "@/components/custom/Loading";
-
+import { useUserStore } from "@/modules/core/store/user.store";
 import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { setUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -38,15 +39,12 @@ export default function LoginPage() {
 
     try {
       const response = await authService.login(data);
-
       login(response.token, response.user);
-
+      setUser(response.user);
       const userName = getFirstNameLastName(response.user);
       toast.success(`¡Bienvenido, ${userName}!`, { id: toastId });
-
       const redirectPath =
         response.user.role === "ADMIN" ? paths.adminHome : paths.home;
-
       navigate(redirectPath, { replace: true });
     } catch (error) {
       const message = getErrorMessage(error);

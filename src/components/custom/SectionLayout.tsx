@@ -1,7 +1,7 @@
 import { Sidebar } from "@/components/custom/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import type { User } from "@/modules/core/data/dashboard.types";
+import type { User } from "@/modules/home/models/user.model";
 import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 interface SectionLayoutProps {
@@ -25,17 +25,11 @@ export function SectionLayout({
   children,
   sidebarSecondary,
 }: SectionLayoutProps) {
-  const userLegacyFormat = {
-    ...user,
-    names: user.first_name,
-    first_last_name: user.last_name,
-  } as any;
-
-  const displayName = getFirstNameLastName(userLegacyFormat);
+  const displayName = getFirstNameLastName(user);
 
   return (
     <div className="flex h-screen w-full bg-[#0a0a0a] text-white font-sans overflow-hidden">
-      <Sidebar user={user as any} />
+      <Sidebar user={user} />
 
       <main className="flex-1 flex flex-col min-w-0 bg-[#0a0a0a]">
         <header className="sticky top-0 z-10 flex items-center justify-between p-8 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-gray-900/50">

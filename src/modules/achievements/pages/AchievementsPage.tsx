@@ -1,19 +1,21 @@
 import { useState } from "react";
-import type { User, Achievement } from "@/modules/core/data/dashboard.types";
-import { userMock, achievementsMock } from "@/modules/core/data/dashboard.data";
+import type { Achievement } from "@/modules/core/data/dashboard.types";
+import { achievementsMock } from "@/modules/core/data/dashboard.data";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-
+import { useUserStore } from "@/modules/core/store/user.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionLayout } from "@/components/custom/SectionLayout";
-import { AchievementCard } from "../components/AchievementCard";
-import { AchievementFormAside } from "../components/AchievementFormAside";
+import { AchievementCard } from "@/modules/achievements/components/AchievementCard";
+import { AchievementFormAside } from "@/modules/achievements/components/AchievementFormAside";
 import { Trophy } from "lucide-react";
 
 export default function AchievementsPage() {
-  const [user] = useState<User>(userMock);
+  const { user } = useUserStore();
   const [isAsideOpen, setIsAsideOpen] = useState(false);
   const [selectedAchievement, setSelectedAchievement] =
     useState<Achievement | null>(null);
+
+  if (!user) return null;
 
   const getFilteredAchievements = (tabValue: string) => {
     if (tabValue === "all") return achievementsMock;
@@ -39,7 +41,7 @@ export default function AchievementsPage() {
 
   return (
     <SectionLayout
-      user={user}
+      user={user as any}
       title="Logros"
       subtitle={`${achievementsMock.length} hitos registrados`}
       buttonLabel="Nuevo Logro"

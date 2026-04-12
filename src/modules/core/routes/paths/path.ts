@@ -10,6 +10,7 @@ const paths = {
   tasks: "/tasks",
   experiences: "/experiences",
   profile: "/profile",
+  editProfile: "/profile/edit",
   adminHome: "/admin/dashboard",
   adminDirectory: "/admin/directory",
 };

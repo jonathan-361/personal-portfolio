@@ -17,6 +17,5 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to={paths.test2} replace />;
   }
 
-  // 3. Si todo está bien, renderiza la ruta
   return <Outlet />;
 };

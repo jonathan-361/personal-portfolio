@@ -22,7 +22,7 @@ export const useSidebarStore = create<SidebarState>()(
       close: () => set({ isOpen: false }),
     }),
     {
-      name: "sidebar-storage", // 🔑 clave en localStorage
+      name: "sidebar-storage",
     },
   ),
 );

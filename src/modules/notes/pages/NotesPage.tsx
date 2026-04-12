@@ -8,12 +8,13 @@ import { Search } from "lucide-react";
 import { NoteCard } from "@/modules/notes/components/NoteCard";
 import { NoteFormModal } from "@/modules/notes/components/NoteFormModal";
 import { ViewNoteModal } from "@/modules/notes/components/ViewNoteModal";
-import { userMock, notesMock } from "@/modules/core/data/dashboard.data";
+import { useUserStore } from "@/modules/core/store/user.store";
+import { notesMock } from "@/modules/core/data/dashboard.data";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
-import type { User, Note } from "@/modules/core/data/dashboard.types";
+import type { Note } from "@/modules/core/data/dashboard.types";
 
 export default function NotesPage() {
-  const [user] = useState<User>(userMock);
+  const { user } = useUserStore();
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -32,9 +33,11 @@ export default function NotesPage() {
     },
   ];
 
+  if (!user) return null;
+
   return (
     <SectionLayout
-      user={user}
+      user={user as any}
       title="Mis Notas"
       buttonLabel="Nueva Nota"
       onButtonClick={() => {

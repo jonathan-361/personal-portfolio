@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { User } from "@/modules/auth/models/auth.model";
+import type { User } from "@/modules/home/models/user.model";
+import { useUserStore } from "@/modules/core/store/user.store";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -13,7 +14,10 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
+  const { setUser: setZustandUser, clearUser: clearZustandUser } =
+    useUserStore();
+
+  const [user, setUserState] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("auth_user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
@@ -23,14 +27,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (token: string, userData: User) => {
     localStorage.setItem("auth_token", token);
     localStorage.setItem("auth_user", JSON.stringify(userData));
-    setUser(userData);
+
+    setUserState(userData);
+    setZustandUser(userData);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("auth_user");
-    setUser(null);
+
+    setUserState(null);
+    clearZustandUser();
     setIsAuthenticated(false);
   };
 

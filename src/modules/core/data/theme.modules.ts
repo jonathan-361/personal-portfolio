@@ -89,7 +89,7 @@ export const ACHIEVEMENT_THEME = {
   },
 } as const;
 
-// Temas simplificados para las estadísticas (StatCards)
+// Temas simplificados para las estadísticas
 export const STATS_THEME = {
   notes: {
     icon: StickyNote,

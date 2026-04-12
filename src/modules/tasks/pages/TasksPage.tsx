@@ -3,11 +3,12 @@ import { SectionLayout } from "@/components/custom/SectionLayout";
 import { TaskCard } from "../components/TaskCard";
 import { TaskFormAside } from "../components/TaskFormAside";
 import { useTaskStore } from "@/modules/core/store/task.store";
-import { userMock } from "@/modules/core/data/dashboard.data";
+import { useUserStore } from "@/modules/core/store/user.store";
 import { type TaskStatus } from "@/modules/core/data/dashboard.types";
 
 export default function TasksPage() {
   const tasks = useTaskStore((state) => state.tasks);
+  const { user } = useUserStore();
   const [isAsideOpen, setIsAsideOpen] = useState(false);
 
   const columns: { title: string; status: TaskStatus }[] = [
@@ -16,9 +17,11 @@ export default function TasksPage() {
     { title: "Completado", status: "COMPLETADO" },
   ];
 
+  if (!user) return null;
+
   return (
     <SectionLayout
-      user={userMock}
+      user={user as any}
       title="Actividades"
       subtitle="Gestión de tareas y pendientes"
       buttonLabel="Nueva Actividad"

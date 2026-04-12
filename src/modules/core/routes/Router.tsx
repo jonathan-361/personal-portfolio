@@ -13,6 +13,7 @@ import TasksPage from "@/modules/tasks/pages/TasksPage";
 import AchievementsPage from "@/modules/achievements/pages/AchievementsPage";
 import ExperiencesPage from "@/modules/experiences/pages/ExperiencesPage";
 import ProfilePage from "@/modules/profile/pages/ProfilePage";
+import EditProfilePage from "@/modules/profile/pages/EditProfilePage";
 
 import { AdminDashboardPage } from "@/modules/admin/sections/home/pages/AdminDashboardPage";
 import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/AdminDirectoryPage";
@@ -44,12 +45,18 @@ export default function AppRouter() {
         <Route path={paths.tasks} element={<TasksPage />} />
         <Route path={paths.achievement} element={<AchievementsPage />} />
         <Route path={paths.experiences} element={<ExperiencesPage />} />
-        <Route path={paths.profile} element={<ProfilePage />} />
       </Route>
 
+      {/* Rutas privadas admin */}
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route path={paths.adminHome} element={<AdminDashboardPage />} />
         <Route path={paths.adminDirectory} element={<AdminDirectoryPage />} />
+      </Route>
+
+      {/* Ruta privada de perfil */}
+      <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
+        <Route path={paths.profile} element={<ProfilePage />} />
+        <Route path={paths.editProfile} element={<EditProfilePage />} />
       </Route>
     </Routes>
   );
