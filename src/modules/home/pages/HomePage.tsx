@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { StatCard } from "@/modules/home/components/StatCard";
 import { HomeCardSection } from "@/modules/home/components/HomeSectionCard";
@@ -9,24 +9,63 @@ import { AchievementPreview } from "../components/AchievementPreview";
 import { ExperiencePreview } from "../components/ExperiencePreview";
 
 import {
-  userMock,
   notesMock,
   achievementsMock,
   tasksMock,
   experiencesMock,
 } from "@/modules/core/data/dashboard.data";
 
-import type { User } from "@/modules/core/data/dashboard.types";
+import { userService } from "@/modules/core/services/user-services/user.services";
+import { useUserStore } from "@/modules/core/store/user.store";
 import paths from "@/modules/core/routes/paths/path";
-
+import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 export default function HomePage() {
-  const [user] = useState<User>(userMock);
+  const { user, setUser } = useUserStore();
+  const [loading, setLoading] = useState(!user);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchUserData = async () => {
+      try {
+        const userData = await userService.getMe(controller.signal);
+        setUser(userData);
+      } catch (error: any) {
+        if (error.name === "CanceledError" || error.name === "AbortError") {
+          console.log("Petición cancelada");
+        } else {
+          console.error("Error en la petición:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+    return () => controller.abort();
+  }, [setUser]);
+
   const currentExp = experiencesMock.find((e) => !e.end_date);
+
+  if (loading && !user) {
+    return (
+      <div className="bg-[#0a0a0a] h-screen flex items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-400 animate-pulse">Cargando perfil...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const formattedName = getFirstNameLastName(user as any);
 
   return (
     <SectionLayout
-      user={user}
-      title={`Hola, ${user.first_name} ${user.last_name}`}
+      user={user as any}
+      title={`Hola, ${formattedName}`}
       subtitle={user.email}
       showButton={false}
     >
@@ -47,7 +86,6 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Secciones Detalladas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <HomeCardSection title="Notas Recientes" path={paths.notes}>
             <NotePreview notes={notesMock} />

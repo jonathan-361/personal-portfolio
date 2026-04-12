@@ -180,7 +180,7 @@ export function Sidebar({ user }: { user: User }) {
                     {getFirstNameLastName(user)}
                   </span>
                   <span className="text-[10px] text-gray-500 truncate font-medium">
-                    {user.role} • {user.email}
+                    {user.email}
                   </span>
                 </div>
               )}

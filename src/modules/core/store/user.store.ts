@@ -1,4 +1,3 @@
-// @/modules/core/store/userStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/modules/home/models/user.model";
