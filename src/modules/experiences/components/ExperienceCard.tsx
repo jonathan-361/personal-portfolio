@@ -1,16 +1,15 @@
 import { Briefcase, Calendar } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
-import type { Experience } from "@/modules/core/data/dashboard.types";
+import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
 
 interface ExperienceCardProps {
-  exp: Experience;
+  exp: ExperienceResponse;
   onClick: () => void;
 }
 
 export function ExperienceCard({ exp, onClick }: ExperienceCardProps) {
   const isCurrent = !exp.end_date;
 
-  // Configuración de estilos
   const styles = {
     cardBg: "bg-gradient-to-br from-gray-900/40 to-blue-900/10",
     cardBorder: "border-blue-900/30",
@@ -26,7 +25,6 @@ export function ExperienceCard({ exp, onClick }: ExperienceCardProps) {
       onClick={onClick}
       className="relative pl-14 group cursor-pointer transition-all duration-300 active:scale-[0.99]"
     >
-      {/* Indicador de Línea de Tiempo */}
       <div className="absolute left-0 top-1 z-10">
         <div
           className={`w-12 h-12 rounded-full border-4 border-[#0a0a0a] flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${styles.iconBg}`}
@@ -35,7 +33,6 @@ export function ExperienceCard({ exp, onClick }: ExperienceCardProps) {
         </div>
       </div>
 
-      {/* Cuerpo de la Card */}
       <div
         className={`
         relative overflow-hidden

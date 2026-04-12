@@ -1,5 +1,5 @@
 import { api } from "@/modules/core/services/axios.instance";
-// Usamos los nombres exactos de tus modelos e interfaces
+
 import type {
   AchievementResponse,
   AchievementMessageResponse,

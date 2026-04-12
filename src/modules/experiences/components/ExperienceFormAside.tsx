@@ -1,17 +1,47 @@
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Edit3, Trash2, Save, Briefcase } from "lucide-react";
+import {
+  Edit3,
+  Trash2,
+  Save,
+  Briefcase,
+  Loader2,
+  Calendar,
+  AlertCircle,
+} from "lucide-react";
 import { CustomAside } from "@/components/custom/CustomAside";
-import type { Experience } from "@/modules/core/data/dashboard.types";
+import { useExperienceStore } from "@/modules/core/store/experience.store";
+import { toast } from "sonner";
+import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+
+// Componente para validación individual debajo de los inputs
+const ErrorMessage = ({ message }: { message?: string }) => {
+  if (!message) return null;
+  return (
+    <p className="text-red-500 text-[10px] mt-1 flex items-center gap-1 animate-in fade-in slide-in-from-top-1">
+      <AlertCircle className="w-3 h-3" /> {message}
+    </p>
+  );
+};
 
 interface ExperienceFormAsideProps {
-  initialData: Experience | null;
+  initialData: ExperienceResponse | null;
   onCancel: () => void;
   onSave: () => void;
+}
+
+interface ExperienceFormValues {
+  company: string;
+  position: string;
+  start_date: string;
+  end_date: string | null;
+  description: string;
+  is_current: boolean;
 }
 
 export function ExperienceFormAside({
@@ -19,20 +49,95 @@ export function ExperienceFormAside({
   onCancel,
   onSave,
 }: ExperienceFormAsideProps) {
+  const { addExperience, updateExperienceInStore, removeExperienceFromStore } =
+    useExperienceStore();
+
   const [isEditing, setIsEditing] = useState(!initialData);
-  const [isCurrentWork, setIsCurrentWork] = useState(
-    initialData ? !initialData.end_date : false,
-  );
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { isSubmitting, errors },
+  } = useForm<ExperienceFormValues>({
+    defaultValues: {
+      company: "",
+      position: "",
+      start_date: "",
+      end_date: "",
+      description: "",
+      is_current: false,
+    },
+  });
+
+  const isCurrentWork = watch("is_current");
 
   useEffect(() => {
-    setIsCurrentWork(initialData ? !initialData.end_date : false);
-  }, [initialData]);
+    if (initialData) {
+      reset({
+        company: initialData.company,
+        position: initialData.position,
+        start_date: initialData.start_date?.split("T")[0] || "",
+        end_date: initialData.end_date?.split("T")[0] || null,
+        description: initialData.description || "",
+        is_current: !initialData.end_date,
+      });
+      setIsEditing(false);
+    } else {
+      reset({
+        company: "",
+        position: "",
+        start_date: new Date().toISOString().split("T")[0],
+        end_date: null,
+        description: "",
+        is_current: false,
+      });
+      setIsEditing(true);
+    }
+  }, [initialData, reset]);
 
-  const HeaderIcon = (
-    <div className="p-2 rounded-lg bg-blue-600/10 border border-blue-600/20">
-      <Briefcase className="w-5 h-5 text-blue-500" />
-    </div>
-  );
+  const handleCurrentChange = (checked: boolean) => {
+    setValue("is_current", checked);
+    if (checked) setValue("end_date", null);
+  };
+
+  const onSubmit = async (data: ExperienceFormValues) => {
+    try {
+      const dataToSubmit = {
+        company: data.company,
+        position: data.position,
+        start_date: data.start_date,
+        end_date: data.is_current ? null : data.end_date,
+        description: data.description,
+      };
+
+      if (!initialData) {
+        await addExperience(dataToSubmit as any);
+        toast.success("Experiencia añadida correctamente");
+      } else {
+        await updateExperienceInStore(initialData.id, dataToSubmit as any);
+        toast.success("Cambios actualizados");
+      }
+
+      // Se cierra el Aside inmediatamente al terminar la petición
+      onSave();
+    } catch (error) {
+      toast.error("Error al procesar la solicitud");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!initialData) return;
+    try {
+      await removeExperienceFromStore(initialData.id);
+      toast.success("Experiencia eliminada");
+      onSave();
+    } catch (error) {
+      toast.error("No se pudo eliminar el registro");
+    }
+  };
 
   return (
     <CustomAside
@@ -41,104 +146,108 @@ export function ExperienceFormAside({
       }
       subtitle={isEditing ? "Formulario de Registro" : "Vista de Experiencia"}
       onClose={onCancel}
-      headerAction={HeaderIcon}
+      headerAction={
+        <div className="p-2 rounded-lg bg-blue-600/10 border border-blue-600/20">
+          <Briefcase className="w-5 h-5 text-blue-500" />
+        </div>
+      }
     >
-      <div className="flex flex-col h-full gap-6">
-        <div className="space-y-5 flex-1">
-          {/* Compañía */}
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <div className="space-y-5 flex-1 text-white">
           <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Compañía</Label>
+            <Label className="text-gray-300 text-sm">Compañía *</Label>
             <Input
-              disabled={!isEditing}
-              defaultValue={initialData?.company ?? ""}
-              placeholder="Ej: IMSS Mérida"
-              className="bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50"
+              {...register("company", {
+                required: "La compañía es obligatoria",
+              })}
+              disabled={!isEditing || isSubmitting}
+              className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${errors.company ? "border-red-500" : ""}`}
             />
+            <ErrorMessage message={errors.company?.message} />
           </div>
 
-          {/* Posición */}
           <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Posición</Label>
+            <Label className="text-gray-300 text-sm">Posición *</Label>
             <Input
-              disabled={!isEditing}
-              defaultValue={initialData?.position ?? ""}
-              placeholder="Ej: Desarrollador Jr."
-              className="bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50"
+              {...register("position", { required: "El cargo es obligatorio" })}
+              disabled={!isEditing || isSubmitting}
+              className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${errors.position ? "border-red-500" : ""}`}
             />
+            <ErrorMessage message={errors.position?.message} />
           </div>
 
-          {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-gray-300 text-sm">Fecha Inicio</Label>
-              <Input
-                type="date"
-                disabled={!isEditing}
-                defaultValue={initialData?.start_date ?? ""}
-                className="bg-[#0f0f0f] border-gray-800 text-[12px]"
-              />
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
+                <Input
+                  {...register("start_date", { required: "Requerido" })}
+                  type="date"
+                  disabled={!isEditing || isSubmitting}
+                  className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark ${errors.start_date ? "border-red-500" : ""}`}
+                />
+              </div>
+              <ErrorMessage message={errors.start_date?.message} />
             </div>
+
             <div className="space-y-2">
               <Label className="text-gray-300 text-sm">Fecha Fin</Label>
-              <Input
-                type="date"
-                disabled={!isEditing || isCurrentWork}
-                defaultValue={
-                  isCurrentWork ? "" : (initialData?.end_date ?? "")
-                }
-                className="bg-[#0f0f0f] border-gray-800 text-[12px] disabled:opacity-30"
-              />
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
+                <Input
+                  {...register("end_date")}
+                  type="date"
+                  disabled={!isEditing || isCurrentWork || isSubmitting}
+                  className="bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark disabled:opacity-20"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Checkbox de Trabajo Actual */}
           <div
-            className={`flex items-center space-x-2 p-3 rounded-lg border transition-all ${
-              isCurrentWork
-                ? "bg-blue-600/10 border-blue-600/30"
-                : "bg-gray-900/30 border-gray-800"
-            }`}
+            className={`flex items-center space-x-2 p-3 rounded-lg border transition-all ${isCurrentWork ? "bg-blue-600/10 border-blue-600/30" : "bg-gray-900/30 border-gray-800"}`}
           >
             <Checkbox
               id="current"
-              disabled={!isEditing}
+              disabled={!isEditing || isSubmitting}
               checked={isCurrentWork}
-              onCheckedChange={(checked) => setIsCurrentWork(!!checked)}
-              className="border-gray-600 data-[state=checked]:bg-blue-600"
+              onCheckedChange={handleCurrentChange}
             />
             <label
               htmlFor="current"
-              className={`text-sm cursor-pointer select-none ${
-                isCurrentWork ? "text-blue-400 font-medium" : "text-gray-400"
-              }`}
+              className="text-sm cursor-pointer text-gray-400"
             >
-              Actualmente trabajo aquí
+              Trabajo actual
             </label>
           </div>
 
-          {/* Descripción */}
           <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Descripción</Label>
+            <Label className="text-gray-300 text-sm">Descripción *</Label>
             <Textarea
-              disabled={!isEditing}
-              defaultValue={initialData?.description ?? ""}
-              placeholder="Describe tus responsabilidades..."
-              className="bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 min-h-32 resize-none"
+              {...register("description", {
+                required: "Escribe una breve descripción",
+              })}
+              disabled={!isEditing || isSubmitting}
+              className={`bg-[#0f0f0f] border-gray-800 min-h-32 resize-none ${errors.description ? "border-red-500" : ""}`}
             />
+            <ErrorMessage message={errors.description?.message} />
           </div>
         </div>
 
-        {/* Footer de Acciones */}
         <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 bg-black">
           {initialData && !isEditing ? (
             <div className="grid grid-cols-2 gap-4">
               <Button
+                type="button"
                 onClick={() => setIsEditing(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold gap-2"
+                className="bg-blue-600 hover:bg-blue-700 font-bold gap-2"
               >
                 <Edit3 className="w-4 h-4" /> Editar
               </Button>
               <Button
+                type="button"
+                onClick={handleDelete}
                 variant="ghost"
                 className="text-red-500 hover:bg-red-600/10 font-bold gap-2"
               >
@@ -148,23 +257,30 @@ export function ExperienceFormAside({
           ) : (
             <>
               <Button
-                onClick={onSave}
+                type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-white text-black hover:bg-gray-200 font-bold gap-2"
               >
-                <Save className="w-4 h-4" />
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
                 {initialData ? "Guardar Cambios" : "Guardar Experiencia"}
               </Button>
               <Button
+                type="button"
                 variant="ghost"
+                disabled={isSubmitting}
                 onClick={initialData ? () => setIsEditing(false) : onCancel}
-                className="w-full text-gray-500 hover:text-white hover:bg-gray-900"
+                className="w-full text-gray-500"
               >
                 Cancelar
               </Button>
             </>
           )}
         </div>
-      </div>
+      </form>
     </CustomAside>
   );
 }

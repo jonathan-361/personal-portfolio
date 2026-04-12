@@ -247,7 +247,7 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
               <span className="text-white font-medium">"{task.title}"</span>.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
+          <AlertDialogFooter className="mt-4 bg-black">
             <AlertDialogCancel className="bg-transparent border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition-all">
               Cancelar
             </AlertDialogCancel>
