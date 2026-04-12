@@ -1,38 +1,62 @@
 import { create } from "zustand";
-import { tasksMock } from "@/modules/core/data/dashboard.data";
-import type { Task, TaskStatus } from "@/modules/core/data/dashboard.types";
+import type { TaskResponse } from "@/modules/tasks/models/task.model";
+import { taskService } from "@/modules/core/services/task-services/task.services";
 
 interface TaskState {
-  tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
-  updateTaskStatus: (taskId: number, newStatus: TaskStatus) => void;
-  addTask: (task: Omit<Task, "id" | "created_at">) => void;
+  tasks: TaskResponse[];
+  isLoading: boolean;
+  fetchTasks: () => Promise<void>;
+  addTask: (task: TaskResponse) => void;
+  updateTaskStatus: (
+    id: number,
+    status: TaskResponse["in_progress"],
+  ) => Promise<void>;
+  updateTaskInStore: (id: number, updatedData: Partial<TaskResponse>) => void;
+  removeTaskFromStore: (id: number) => void;
 }
 
 export const useTaskStore = create<TaskState>((set) => ({
-  tasks: tasksMock,
-  setTasks: (tasks) => set({ tasks }),
+  tasks: [],
+  isLoading: false,
 
-  updateTaskStatus: (taskId, newStatus) =>
+  fetchTasks: async () => {
+    set({ isLoading: true });
+    try {
+      const data = await taskService.getAll();
+      set({ tasks: data });
+    } catch (error) {
+      console.error("Error al obtener tareas:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateTaskStatus: async (id, status) => {
+    try {
+      // 1. Llamada a la API
+      await taskService.update(id, { in_progress: status } as any);
+      // 2. Actualización local del Store
+      set((state) => ({
+        tasks: state.tasks.map((t) =>
+          t.id === id ? { ...t, in_progress: status } : t,
+        ),
+      }));
+    } catch (error) {
+      console.error("Error al actualizar estado:", error);
+    }
+  },
+
+  addTask: (newTask) => set((state) => ({ tasks: [newTask, ...state.tasks] })),
+
+  updateTaskInStore: (id, updatedData) =>
     set((state) => ({
-      tasks: state.tasks.map((t) =>
-        t.id === taskId ? { ...t, status: newStatus } : t,
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, ...updatedData } : task,
       ),
     })),
 
-  addTask: (newTask) =>
+  removeTaskFromStore: (id) =>
     set((state) => ({
-      tasks: [
-        ...state.tasks,
-        {
-          ...newTask,
-          // Evitamos el error de Math.max con un array vacío
-          id:
-            state.tasks.length > 0
-              ? Math.max(...state.tasks.map((t) => t.id)) + 1
-              : 1,
-          created_at: new Date().toISOString(),
-        },
-      ],
+      tasks: state.tasks.filter((task) => task.id !== id),
     })),
 }));

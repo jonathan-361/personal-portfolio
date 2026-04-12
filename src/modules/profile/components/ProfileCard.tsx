@@ -16,13 +16,14 @@ import paths from "@/modules/core/routes/paths/path";
 import { getInitials } from "@/lib/getInitials";
 import { formatDate } from "@/lib/formatters";
 import { getFullName } from "@/lib/getFullName";
+import { DeleteAccountDialog } from "@/modules/profile/components/DeleteAccountDialog";
 
 interface ProfileCardProps {
   user: User;
   onEditClick?: () => void;
 }
 
-export function ProfileCard({ user, onEditClick }: ProfileCardProps) {
+export function ProfileCard({ user }: ProfileCardProps) {
   const navigate = useNavigate();
   const theme = STATS_THEME.tasks;
 
@@ -127,6 +128,11 @@ export function ProfileCard({ user, onEditClick }: ProfileCardProps) {
           />
         </div>
       </CardContent>
+      <div className="px-8 pb-8 mt-4 relative z-10">
+        <div className="pt-6 border-t border-gray-900/50 flex justify-center md:justify-end">
+          <DeleteAccountDialog />
+        </div>
+      </div>
     </Card>
   );
 }

@@ -4,10 +4,12 @@ export const registerSchema = z
   .object({
     names: z
       .string()
+      .trim()
       .max(30, "Máximo 30 caracteres")
       .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, {
         message: "Solo se permiten letras y espacios",
-      }),
+      })
+      .transform((val) => val.replace(/\s+/g, " ")),
 
     first_last_name: z
       .string()
@@ -40,9 +42,11 @@ export const registerSchema = z
 
     password: z
       .string()
+      .trim()
       .min(1, { message: "No dejes el campo vacío" })
       .min(8, "Mínimo 8 caracteres")
       .max(30, "Máximo 30 caracteres")
+      .regex(/^\S+$/, "La contraseña no puede contener espacios")
       .regex(/[A-Z]/, "Debe tener al menos una mayúscula")
       .regex(/[0-9]/, "Debe tener al menos un número"),
 

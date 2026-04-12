@@ -1,35 +1,40 @@
-import { useState } from "react";
-import type { Achievement } from "@/modules/core/data/dashboard.types";
-import { achievementsMock } from "@/modules/core/data/dashboard.data";
-import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
+import { useEffect, useState } from "react";
 import { useUserStore } from "@/modules/core/store/user.store";
+import { useAchievementStore } from "@/modules/core/store/achievement.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { AchievementCard } from "@/modules/achievements/components/AchievementCard";
 import { AchievementFormAside } from "@/modules/achievements/components/AchievementFormAside";
-import { Trophy } from "lucide-react";
+import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
+import { Trophy, Loader2 } from "lucide-react";
+import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
 
 export default function AchievementsPage() {
   const { user } = useUserStore();
+  const { achievements, isLoading, fetchAchievements } = useAchievementStore();
+
   const [isAsideOpen, setIsAsideOpen] = useState(false);
   const [selectedAchievement, setSelectedAchievement] =
-    useState<Achievement | null>(null);
+    useState<AchievementResponse | null>(null);
+
+  useEffect(() => {
+    fetchAchievements();
+  }, [fetchAchievements]);
 
   if (!user) return null;
 
-  const getFilteredAchievements = (tabValue: string) => {
-    if (tabValue === "all") return achievementsMock;
-
-    const catMap: Record<string, string> = {
-      academic: ACHIEVEMENT_THEME.Académico.label,
-      professional: ACHIEVEMENT_THEME.Profesional.label,
-      personal: ACHIEVEMENT_THEME.Personal.label,
-    };
-
-    return achievementsMock.filter((a) => a.type === catMap[tabValue]);
+  const catMap: Record<string, string> = {
+    academic: "ACADEMICO",
+    professional: "PROFESIONAL",
+    personal: "PERSONAL",
   };
 
-  const handleOpenAside = (achievement: Achievement | null = null) => {
+  const getFilteredAchievements = (tabValue: string) => {
+    if (tabValue === "all") return achievements;
+    return achievements.filter((a) => a.achievement_type === catMap[tabValue]);
+  };
+
+  const handleOpenAside = (achievement: AchievementResponse | null = null) => {
     setSelectedAchievement(achievement);
     setIsAsideOpen(true);
   };
@@ -43,7 +48,7 @@ export default function AchievementsPage() {
     <SectionLayout
       user={user as any}
       title="Logros"
-      subtitle={`${achievementsMock.length} hitos registrados`}
+      subtitle={`${achievements.length} hitos registrados`}
       buttonLabel="Nuevo Logro"
       onButtonClick={() => handleOpenAside(null)}
       showButton={!isAsideOpen}
@@ -83,7 +88,14 @@ export default function AchievementsPage() {
               value={id}
               className="mt-8 outline-none animate-in fade-in duration-500"
             >
-              {getFilteredAchievements(id).length > 0 ? (
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+                  <p className="text-gray-500 font-medium">
+                    Cargando tus logros...
+                  </p>
+                </div>
+              ) : getFilteredAchievements(id).length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {getFilteredAchievements(id).map((ach) => (
                     <AchievementCard
@@ -102,8 +114,7 @@ export default function AchievementsPage() {
                     Sin registros
                   </h3>
                   <p className="text-gray-600 mt-2 max-w-xs mx-auto">
-                    Aún no has añadido hitos en la categoría de{" "}
-                    {id === "all" ? "logros" : id}.
+                    Aún no has añadido hitos en esta categoría.
                   </p>
                 </div>
               )}

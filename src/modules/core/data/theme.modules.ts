@@ -120,3 +120,57 @@ export const STATS_THEME = {
     gradient: "to-emerald-900/10",
   },
 } as const;
+
+// Temas simplificados para las tareas
+export const TASK_STATUS_THEME = {
+  PENDIENTE: {
+    label: "Pendientes",
+    color: "blue",
+    iconColor: "text-blue-400",
+    border: "border-blue-500",
+    borderT: "border-t-blue-500",
+    bg: "bg-blue-600/10",
+    bgStrong: "bg-blue-600/20",
+    gradient: "from-gray-900/40 to-blue-900/10",
+    cardBorder: "border-blue-900/30",
+  },
+  "EN PROCESO": {
+    label: "En Proceso",
+    color: "amber",
+    iconColor: "text-amber-400",
+    border: "border-amber-500",
+    borderT: "border-t-amber-500",
+    bg: "bg-amber-600/10",
+    bgStrong: "bg-amber-600/20",
+    gradient: "from-gray-900/40 to-amber-900/10",
+    cardBorder: "border-amber-900/30",
+  },
+  COMPLETADO: {
+    label: "Completado",
+    color: "emerald",
+    iconColor: "text-emerald-400",
+    border: "border-emerald-500",
+    borderT: "border-t-emerald-500",
+    bg: "bg-emerald-600/10",
+    bgStrong: "bg-emerald-600/20",
+    gradient: "from-gray-900/40 to-emerald-900/10",
+    cardBorder: "border-emerald-900/30",
+  },
+} as const;
+
+export const TASK_DETAILS_THEME = {
+  container: "bg-[#0a0a0a] text-white shadow-2xl border border-white/10",
+  header: {
+    icon: CheckSquare,
+    color: "text-blue-400",
+  },
+  label: "text-[10px] uppercase font-black text-gray-500 tracking-widest",
+  input:
+    "bg-black/40 border-gray-800 focus:border-blue-500/50 focus:ring-0 text-white disabled:opacity-50 transition-all",
+  buttons: {
+    edit: "bg-blue-600/10 text-blue-400 border border-blue-500/30 hover:bg-blue-600/20",
+    save: "bg-blue-600 text-white hover:bg-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.3)]",
+    delete: "text-red-500 hover:bg-red-500/10 hover:text-red-400",
+    cancel: "text-gray-400 hover:text-white",
+  },
+} as const;

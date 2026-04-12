@@ -6,6 +6,7 @@ import type {
   LoginResponse,
   RegisterResponse,
 } from "@/modules/auth/models/auth.model";
+import paths from "../../routes/paths/path";
 
 export const authService = {
   login: async (data: LoginFormData): Promise<LoginResponse> => {
@@ -28,10 +29,13 @@ export const authService = {
   logout: () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("auth_user");
+    localStorage.removeItem("user-storage");
+    localStorage.removeItem("sidebar-storage");
+
     useUserStore.getState().clearUser();
 
-    if (!window.location.pathname.includes("/login")) {
-      window.location.href = "/login";
+    if (!window.location.pathname.includes(paths.login)) {
+      window.location.href = paths.login;
     }
   },
 };

@@ -22,17 +22,18 @@ export const userService = {
 
   // Actualizar datos del usuario
   update: async (
-    id: number,
     data: UpdateUserDto,
   ): Promise<{ message: string; user: User }> => {
-    return await api.patch<{ message: string; user: User }>(
-      `/users/${id}`,
-      data,
-    );
+    return await api.patch<{ message: string; user: User }>(`/users/me`, data);
   },
 
-  // Eliminar usuario (ADMIN)
-  delete: async (id: number): Promise<{ message: string }> => {
+  // Eliminar mi propio usuario
+  deleteAccount: async (): Promise<{ message: string }> => {
+    return await api.delete<{ message: string }>("/users/me");
+  },
+
+  // Eliminar usuario
+  deleteById: async (id: number): Promise<{ message: string }> => {
     return await api.delete<{ message: string }>(`/users/${id}`);
   },
 };

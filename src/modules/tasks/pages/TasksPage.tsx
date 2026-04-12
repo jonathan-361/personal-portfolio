@@ -1,19 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { TaskCard } from "../components/TaskCard";
 import { TaskFormAside } from "../components/TaskFormAside";
 import { useTaskStore } from "@/modules/core/store/task.store";
 import { useUserStore } from "@/modules/core/store/user.store";
-import { type TaskStatus } from "@/modules/core/data/dashboard.types";
 
 export default function TasksPage() {
-  const tasks = useTaskStore((state) => state.tasks);
+  const { tasks, fetchTasks, isLoading } = useTaskStore();
   const { user } = useUserStore();
   const [isAsideOpen, setIsAsideOpen] = useState(false);
 
-  const columns: { title: string; status: TaskStatus }[] = [
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const columns: {
+    title: string;
+    status: "PENDIENTE" | "EN PROCESO" | "COMPLETADO";
+  }[] = [
     { title: "Pendientes", status: "PENDIENTE" },
-    { title: "En Proceso", status: "PROCESO" },
+    { title: "En Proceso", status: "EN PROCESO" },
     { title: "Completado", status: "COMPLETADO" },
   ];
 
@@ -32,28 +38,39 @@ export default function TasksPage() {
         {columns.map((column) => (
           <div
             key={column.status}
-            className="flex flex-col gap-4 bg-gray-900/10 p-4 rounded-2xl border border-gray-900/50 min-h-100"
+            className="flex flex-col gap-4 bg-gray-900/10 p-4 rounded-2xl border border-gray-900/50 min-h-[400px]"
           >
             <div className="flex justify-between items-center px-2">
               <span className="text-[10px] font-black uppercase text-gray-500 tracking-tighter">
                 {column.title}
               </span>
-              <span className="text-[10px] bg-gray-800 text-gray-400 px-2 rounded-full">
-                {tasks.filter((t) => t.status === column.status).length}
+              <span className="text-[10px] bg-gray-800 text-gray-400 px-2 rounded-full font-bold">
+                {tasks.filter((t) => t.in_progress === column.status).length}
               </span>
             </div>
 
             <div className="flex flex-col gap-3">
-              {tasks
-                .filter((t) => t.status === column.status)
-                .map((task) => (
-                  <TaskCard key={task.id} task={task} />
-                ))}
+              {isLoading ? (
+                <p className="text-center text-xs text-gray-600 animate-pulse py-10">
+                  Cargando...
+                </p>
+              ) : (
+                <>
+                  {tasks
+                    .filter((t) => t.in_progress === column.status)
+                    .map((task) => (
+                      <TaskCard key={task.id} task={task} />
+                    ))}
 
-              {tasks.filter((t) => t.status === column.status).length === 0 && (
-                <div className="text-center py-10 border border-dashed border-gray-800 rounded-xl">
-                  <p className="text-xs text-gray-600 italic">No hay tareas</p>
-                </div>
+                  {tasks.filter((t) => t.in_progress === column.status)
+                    .length === 0 && (
+                    <div className="text-center py-10 border border-dashed border-gray-800 rounded-xl">
+                      <p className="text-xs text-gray-600 italic">
+                        No hay tareas
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -61,8 +78,16 @@ export default function TasksPage() {
       </div>
 
       {isAsideOpen && (
-        <div className="fixed inset-0 z-100 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <TaskFormAside onClose={() => setIsAsideOpen(false)} />
+        <div
+          className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setIsAsideOpen(false)}
+        >
+          <div
+            className="h-full w-full max-w-md shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <TaskFormAside onClose={() => setIsAsideOpen(false)} />
+          </div>
         </div>
       )}
     </SectionLayout>

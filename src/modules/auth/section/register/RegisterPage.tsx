@@ -63,11 +63,13 @@ function RegisterPage() {
           label="Apellido paterno"
           {...register("first_last_name")}
           error={errors.first_last_name?.message}
+          allowSpaces={false}
         />
         <FormField
           label="Apellido materno"
           {...register("second_last_name")}
           error={errors.second_last_name?.message}
+          allowSpaces={false}
         />
         <div className="col-span-2">
           <FormField
@@ -75,6 +77,7 @@ function RegisterPage() {
             type="email"
             {...register("email")}
             error={errors.email?.message}
+            allowSpaces={false}
           />
         </div>
         <FormField
@@ -82,12 +85,14 @@ function RegisterPage() {
           type="password"
           {...register("password")}
           error={errors.password?.message}
+          allowSpaces={false}
         />
         <FormField
           label="Confirmar contraseña"
           type="password"
           {...register("repeat_password")}
           error={errors.repeat_password?.message}
+          allowSpaces={false}
         />
 
         <Button

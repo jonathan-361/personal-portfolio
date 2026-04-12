@@ -9,51 +9,28 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTaskStore } from "@/modules/core/store/task.store";
-import { TaskDetailsModal } from "@/modules/tasks/components/TaskDetails";
-import type { Task } from "@/modules/core/data/dashboard.types";
+import { TaskDetails } from "@/modules/tasks/components/TaskDetails";
+import { TASK_STATUS_THEME } from "@/modules/core/data/theme.modules";
+import type { TaskResponse } from "@/modules/tasks/models/task.model";
 
-export function TaskCard({ task }: { task: Task }) {
+export function TaskCard({ task }: { task: TaskResponse }) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const updateStatus = useTaskStore((state) => state.updateTaskStatus);
 
-  const isPending = task.status === "PENDIENTE";
-  const isInProgress = task.status === "PROCESO";
-  const isCompleted = task.status === "COMPLETADO";
+  const statusKey = task.in_progress as keyof typeof TASK_STATUS_THEME;
+  const config = TASK_STATUS_THEME[statusKey];
 
-  // Mapeo de estilos según el estado de la tarea
-  const statusConfig = {
-    PENDIENTE: {
-      border: "border-t-blue-500",
-      cardBg: "bg-gradient-to-br from-gray-900/40 to-blue-900/10",
-      cardBorder: "border-blue-900/30",
-      iconBg: "bg-blue-600/10",
-      iconColor: "text-blue-400",
-    },
-    PROCESO: {
-      border: "border-t-amber-500",
-      cardBg: "bg-gradient-to-br from-gray-900/40 to-amber-900/10",
-      cardBorder: "border-amber-900/30",
-      iconBg: "bg-amber-600/10",
-      iconColor: "text-amber-400",
-    },
-    COMPLETADO: {
-      border: "border-t-emerald-500",
-      cardBg: "bg-gradient-to-br from-gray-900/40 to-emerald-900/10",
-      cardBorder: "border-emerald-900/30",
-      iconBg: "bg-emerald-600/10",
-      iconColor: "text-emerald-400",
-    },
-  };
-
-  const config = statusConfig[task.status];
+  const isPending = task.in_progress === "PENDIENTE";
+  const isInProgress = task.in_progress === "EN PROCESO";
+  const isCompleted = task.in_progress === "COMPLETADO";
 
   return (
     <>
       <Card
         onClick={() => setIsDetailsOpen(true)}
         className={`
-          relative overflow-hidden
-          ${config.cardBg} ${config.cardBorder} border-t-4 ${config.border}
+          relative overflow-hidden bg-gradient-to-br from-gray-900/40 ${config.gradient}
+          ${config.cardBorder} border-t-4 ${config.borderT}
           transition-all duration-300 group shadow-md cursor-pointer 
           hover:shadow-xl hover:scale-[1.02] hover:bg-gray-800/40
           ${isCompleted ? "opacity-75" : ""}
@@ -64,14 +41,14 @@ export function TaskCard({ task }: { task: Task }) {
             <div className="space-y-1 flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <div
-                  className={`p-1.5 rounded-md ${config.iconBg} border border-white/5`}
+                  className={`p-1.5 rounded-md ${config.bg} border border-white/5`}
                 >
                   <ListTodo className={`w-3.5 h-3.5 ${config.iconColor}`} />
                 </div>
                 <span
                   className={`text-[10px] font-black uppercase tracking-widest ${config.iconColor}`}
                 >
-                  {task.status}
+                  {config.label}
                 </span>
               </div>
               <h3
@@ -93,7 +70,7 @@ export function TaskCard({ task }: { task: Task }) {
                   className="h-8 px-3 text-[10px] font-bold uppercase gap-1.5 bg-blue-600 hover:bg-blue-700 text-white transition-all active:scale-95"
                   onClick={(e) => {
                     e.stopPropagation();
-                    updateStatus(task.id, "PROCESO");
+                    updateStatus(task.id, "EN PROCESO");
                   }}
                 >
                   <Play className="w-3 h-3 fill-current" /> Comenzar
@@ -120,7 +97,7 @@ export function TaskCard({ task }: { task: Task }) {
                     e.stopPropagation();
                     updateStatus(
                       task.id,
-                      isInProgress ? "PENDIENTE" : "PROCESO",
+                      isInProgress ? "PENDIENTE" : "EN PROCESO",
                     );
                   }}
                 >
@@ -131,16 +108,16 @@ export function TaskCard({ task }: { task: Task }) {
 
             <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 bg-black/30 px-2 py-1 rounded-md border border-white/5">
               <Calendar className="w-3 h-3" />
-              {task.task_date || "S/FECHA"}
+              {task.task_date ? task.task_date.split("T")[0] : "S/FECHA"}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <TaskDetailsModal
+      <TaskDetails
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
-        task={task}
+        task={task as any}
       />
     </>
   );

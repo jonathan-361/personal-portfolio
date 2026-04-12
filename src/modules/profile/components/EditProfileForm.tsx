@@ -55,7 +55,7 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
     };
 
     try {
-      const response = await userService.update(user.id, cleanData);
+      const response = await userService.update(cleanData);
       setUser(response.user);
       toast.success("Perfil actualizado correctamente");
       onCancel();

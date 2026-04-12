@@ -1,9 +1,9 @@
 import { Calendar } from "lucide-react";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-import type { Achievement } from "@/modules/core/data/dashboard.types";
+import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
 
 interface AchievementCardProps {
-  achievement: Achievement;
+  achievement: AchievementResponse;
   onClick: () => void;
 }
 
@@ -11,8 +11,15 @@ export function AchievementCard({
   achievement,
   onClick,
 }: AchievementCardProps) {
-  const config =
-    ACHIEVEMENT_THEME[achievement.type as keyof typeof ACHIEVEMENT_THEME];
+  // Mapeamos el Enum de la DB al label que usa tu objeto ACHIEVEMENT_THEME
+  const typeMap: Record<string, string> = {
+    ACADEMICO: "Académico",
+    PROFESIONAL: "Profesional",
+    PERSONAL: "Personal",
+  };
+
+  const themeKey = typeMap[achievement.achievement_type] || "Personal";
+  const config = ACHIEVEMENT_THEME[themeKey as keyof typeof ACHIEVEMENT_THEME];
   const Icon = config.icon;
 
   return (
@@ -31,7 +38,7 @@ export function AchievementCard({
           <Icon className={`w-6 h-6 ${config.theme.text}`} />
         </div>
         <div className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-black/40 border border-white/5 text-gray-400 uppercase tracking-widest shrink-0 backdrop-blur-md">
-          {achievement.type}
+          {themeKey}
         </div>
       </div>
 
@@ -48,7 +55,16 @@ export function AchievementCard({
 
       <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-tighter relative z-10">
         <Calendar className="w-3.5 h-3.5" />
-        <span>{achievement.achieved_at || "Fecha no especificada"}</span>
+        <span>
+          {/* Formateamos la fecha si viene de la DB o mostramos fallback */}
+          {achievement.achieved_at
+            ? new Date(achievement.achieved_at).toLocaleDateString("es-ES", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+            : "Fecha no especificada"}
+        </span>
       </div>
     </div>
   );

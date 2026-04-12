@@ -3,6 +3,7 @@ import {
   type AxiosResponse,
   AxiosError,
 } from "axios";
+import { authService } from "./auth-services/auth.services";
 
 export const requestInterceptor = (config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("auth_token");
@@ -24,6 +25,7 @@ export const responseErrorInterceptor = (error: AxiosError) => {
   if (error.response?.status === 401) {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("auth_user");
+    authService.logout();
 
     if (!window.location.pathname.includes("/login")) {
       window.location.href = "/login";
