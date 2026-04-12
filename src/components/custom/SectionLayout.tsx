@@ -2,6 +2,7 @@ import { Sidebar } from "@/components/custom/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import type { User } from "@/modules/core/data/dashboard.types";
+import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 interface SectionLayoutProps {
   user: User;
@@ -24,16 +25,24 @@ export function SectionLayout({
   children,
   sidebarSecondary,
 }: SectionLayoutProps) {
+  const userLegacyFormat = {
+    ...user,
+    names: user.first_name,
+    first_last_name: user.last_name,
+  } as any;
+
+  const displayName = getFirstNameLastName(userLegacyFormat);
+
   return (
     <div className="flex h-screen w-full bg-[#0a0a0a] text-white font-sans overflow-hidden">
-      {/* Sidebar Principal */}
-      <Sidebar user={user} />
+      <Sidebar user={user as any} />
 
-      {/* Contenido Central */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#0a0a0a]">
         <header className="sticky top-0 z-10 flex items-center justify-between p-8 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-gray-900/50">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {title || `Bienvenido, ${displayName}`}
+            </h1>
             {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
           </div>
 
@@ -48,13 +57,11 @@ export function SectionLayout({
           )}
         </header>
 
-        {/* Zona de Scroll */}
         <div className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar">
           <div className="max-w-7xl mx-auto h-full">{children}</div>
         </div>
       </main>
 
-      {/* Sidebar Secundario (Filtros en Notas, etc.) */}
       {sidebarSecondary}
     </div>
   );

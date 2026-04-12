@@ -13,7 +13,7 @@ import Loading from "@/components/custom/Loading";
 import {
   resetPasswordSchema,
   type ResetPasswordFormData,
-} from "@/modules/auth/schemas/reset_password";
+} from "@/modules/auth/schemas/reset.password";
 
 interface StepResetPasswordProps {
   onSubmit: (data: ResetPasswordFormData) => Promise<void>;

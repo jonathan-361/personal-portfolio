@@ -9,7 +9,7 @@ export const registerSchema = z
         message: "Solo se permiten letras y espacios",
       }),
 
-    first_lastname: z
+    first_last_name: z
       .string()
       .trim()
       .min(1, "No dejes el campo vacío")
@@ -21,7 +21,7 @@ export const registerSchema = z
         message: "No se permiten espacios",
       }),
 
-    second_lastname: z
+    second_last_name: z
       .string()
       .trim()
       .min(1, "No dejes el campo vacío")

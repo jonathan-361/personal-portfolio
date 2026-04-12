@@ -7,13 +7,16 @@ import { useAuth } from "@/modules/core/context/AuthContext";
 import {
   loginSchema,
   type LoginFormData,
-} from "@/modules/auth/schemas/login_schema";
+} from "@/modules/auth/schemas/login.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
+import { getErrorMessage } from "@/modules/core/error/handle.error";
 import paths from "@/modules/core/routes/paths/path";
 import { Button } from "@/components/ui/button";
-import { AuthLayout } from "../../components/AuthLayout";
+import { AuthLayout } from "@/modules/auth/components/AuthLayout";
 import FormField from "@/components/custom/FormField";
 import Loading from "@/components/custom/Loading";
+
+import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -35,11 +38,19 @@ export default function LoginPage() {
 
     try {
       const response = await authService.login(data);
-      login(response.token);
-      toast.success(`¡Bienvenido de nuevo!`, { id: toastId });
-      navigate(paths.home);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Error", { id: toastId });
+
+      login(response.token, response.user);
+
+      const userName = getFirstNameLastName(response.user);
+      toast.success(`¡Bienvenido, ${userName}!`, { id: toastId });
+
+      const redirectPath =
+        response.user.role === "ADMIN" ? paths.adminHome : paths.home;
+
+      navigate(redirectPath, { replace: true });
+    } catch (error) {
+      const message = getErrorMessage(error);
+      toast.error(message, { id: toastId });
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +68,7 @@ export default function LoginPage() {
           {...register("email")}
           error={errors.email?.message}
         />
+
         <FormField
           label="Contraseña"
           type="password"
@@ -70,9 +82,10 @@ export default function LoginPage() {
         </p>
 
         <Button type="submit" className="w-full h-10" disabled={isLoading}>
-          Iniciar sesión
+          {isLoading ? "Cargando..." : "Iniciar sesión"}
         </Button>
       </form>
+
       <div className="mt-4">
         <p className="text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}

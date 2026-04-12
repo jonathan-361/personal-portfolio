@@ -1,13 +1,22 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../context/AuthContext";
-import paths from "./paths/path";
+import { useAuth } from "@/modules/core/context/AuthContext";
+import paths from "@/modules/core/routes/paths/path";
 
-export const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+}
+
+export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+  const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to={paths.login} replace />;
   }
 
+  if (allowedRoles && user && !allowedRoles.includes(user.role || "")) {
+    return <Navigate to={paths.test2} replace />;
+  }
+
+  // 3. Si todo está bien, renderiza la ruta
   return <Outlet />;
 };

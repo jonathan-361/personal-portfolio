@@ -1,3 +1,4 @@
+// @/components/custom/CustomAside.tsx
 import { type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -11,6 +12,7 @@ interface CustomAsideProps {
   isFloating?: boolean;
   headerAction?: ReactNode;
   width?: string;
+  className?: string; // Prop opcional para estilos extra
 }
 
 export function CustomAside({
@@ -22,17 +24,23 @@ export function CustomAside({
   isFloating = true,
   headerAction,
   width = "w-96",
+  className = "",
 }: CustomAsideProps) {
+  // Si es flotante y está cerrado, no renderizamos nada
   if (!isOpen && isFloating) return null;
 
-  // Verificado de si debe estar o no la cabecera
   const hasHeader = title || subtitle || headerAction || onClose;
 
   const asideContent = (
     <aside
       className={`
         ${width} h-full bg-black border-l border-gray-800 flex flex-col shadow-2xl z-50
-        ${isFloating ? "animate-in slide-in-from-right duration-300" : ""}
+        ${
+          isFloating
+            ? "animate-in slide-in-from-right duration-300"
+            : "hidden lg:flex" // Se oculta en móvil, aparece en desktop (1024px+)
+        }
+        ${className}
       `}
       onClick={(e) => e.stopPropagation()}
     >

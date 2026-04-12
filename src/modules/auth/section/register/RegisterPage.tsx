@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import {
   registerSchema,
   type RegisterFormData,
-} from "../../schemas/register_schema";
+} from "../../schemas/register.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
 import paths from "@/modules/core/routes/paths/path";
 
@@ -61,13 +61,13 @@ function RegisterPage() {
         </div>
         <FormField
           label="Apellido paterno"
-          {...register("first_lastname")}
-          error={errors.first_lastname?.message}
+          {...register("first_last_name")}
+          error={errors.first_last_name?.message}
         />
         <FormField
           label="Apellido materno"
-          {...register("second_lastname")}
-          error={errors.second_lastname?.message}
+          {...register("second_last_name")}
+          error={errors.second_last_name?.message}
         />
         <div className="col-span-2">
           <FormField

@@ -10,6 +10,8 @@ const paths = {
   tasks: "/tasks",
   experiences: "/experiences",
   profile: "/profile",
+  adminHome: "/admin/dashboard",
+  adminDirectory: "/admin/directory",
 };
 
 export default paths;

@@ -1,10 +1,12 @@
-import axios, {
-  type AxiosInstance,
-  type AxiosRequestConfig,
-  type InternalAxiosRequestConfig,
-} from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
+import {
+  requestInterceptor,
+  requestErrorInterceptor,
+  responseInterceptor,
+  responseErrorInterceptor,
+} from "./axios.interceptors";
 
-const axiosInstance: AxiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: "http://localhost:3000/api",
   timeout: 15000,
   headers: {
@@ -13,33 +15,13 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-/**
- * Interceptor de peticiones
- */
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
+  requestInterceptor,
+  requestErrorInterceptor,
 );
-
-/**
- * Interceptor de respuestas
- */
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.error("Sesión expirada. Redirigiendo...");
-    }
-    return Promise.reject(error);
-  },
+  responseInterceptor,
+  responseErrorInterceptor,
 );
 
 export const api = {

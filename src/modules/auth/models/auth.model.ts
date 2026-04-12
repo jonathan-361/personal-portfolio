@@ -1,10 +1,11 @@
+import type { ResetPasswordFormData } from "../schemas/reset.password";
+
 export interface User {
   id: string;
   names: string;
-  first_lastname: string;
-  second_lastname: string;
+  first_last_name: string;
+  second_last_name: string;
   email: string;
-  name: string;
   role?: string;
 }
 
@@ -20,3 +21,5 @@ export interface RegisterResponse {
 export interface ChangePasswordResponse {
   message: string;
 }
+
+export interface ResetPasswordPayload extends ResetPasswordFormData {}
