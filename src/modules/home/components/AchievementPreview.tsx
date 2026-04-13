@@ -1,30 +1,58 @@
+// @/modules/home/components/AchievementPreview.tsx
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-import type { Achievement } from "@/modules/core/data/dashboard.types";
+import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
 
-export function AchievementPreview({
-  achievements,
-}: {
-  achievements: Achievement[];
-}) {
+interface AchievementPreviewProps {
+  achievements: AchievementResponse[];
+}
+
+export function AchievementPreview({ achievements }: AchievementPreviewProps) {
+  if (achievements.length === 0) {
+    return (
+      <p className="text-xs text-gray-600 italic p-1">
+        No hay logros registrados.
+      </p>
+    );
+  }
+
+  // 1. Ordenamos por fecha (más reciente primero) y luego tomamos 3
+  const recentAchievements = [...achievements]
+    .sort((a, b) => {
+      const dateA = new Date(a.achieved_at).getTime();
+      const dateB = new Date(b.achieved_at).getTime();
+      return dateB - dateA; // Descendente: de más nuevo a más viejo
+    })
+    .slice(0, 3);
+
   return (
     <div className="space-y-3">
-      {achievements.slice(0, 3).map((ach) => {
-        const config =
-          ACHIEVEMENT_THEME[ach.type as keyof typeof ACHIEVEMENT_THEME];
+      {recentAchievements.map((ach) => {
+        const rawType = ach.achievement_type;
+
+        const themeMap: Record<string, keyof typeof ACHIEVEMENT_THEME> = {
+          ACADEMICO: "Académico",
+          PROFESIONAL: "Profesional",
+          PERSONAL: "Personal",
+        };
+
+        const themeKey = themeMap[rawType] || "Personal";
+        const config = ACHIEVEMENT_THEME[themeKey];
         const Icon = config.icon;
+
         return (
-          <div key={ach.id} className="flex items-center gap-3 p-1">
+          <div key={ach.id} className="flex items-center gap-3 p-1 group">
             <div
-              className={`p-1.5 rounded border border-white/5 ${config.theme.bgStrong}`}
+              className={`p-1.5 rounded border border-white/5 ${config.theme.bgStrong} transition-colors group-hover:border-white/10`}
             >
               <Icon className={`w-3.5 h-3.5 ${config.theme.text}`} />
             </div>
+
             <div className="min-w-0">
-              <h4 className="text-sm font-medium text-gray-200 truncate">
+              <h4 className="text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors">
                 {ach.title}
               </h4>
-              <p className="text-[10px] text-gray-500 uppercase font-bold">
-                {ach.type} •{" "}
+              <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tight">
+                {config.label} •{" "}
                 {ach.achieved_at
                   ? new Date(ach.achieved_at).getFullYear()
                   : "2026"}

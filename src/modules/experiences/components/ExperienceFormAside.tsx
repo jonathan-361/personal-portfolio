@@ -19,7 +19,6 @@ import { useExperienceStore } from "@/modules/core/store/experience.store";
 import { toast } from "sonner";
 import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
 
-// Componente para validación individual debajo de los inputs
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
   return (
@@ -73,6 +72,7 @@ export function ExperienceFormAside({
   });
 
   const isCurrentWork = watch("is_current");
+  const startDateValue = watch("start_date");
 
   useEffect(() => {
     if (initialData) {
@@ -121,7 +121,6 @@ export function ExperienceFormAside({
         toast.success("Cambios actualizados");
       }
 
-      // Se cierra el Aside inmediatamente al terminar la petición
       onSave();
     } catch (error) {
       toast.error("Error al procesar la solicitud");
@@ -154,6 +153,7 @@ export function ExperienceFormAside({
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
         <div className="space-y-5 flex-1 text-white">
+          {/* Compañía */}
           <div className="space-y-2">
             <Label className="text-gray-300 text-sm">Compañía *</Label>
             <Input
@@ -166,6 +166,7 @@ export function ExperienceFormAside({
             <ErrorMessage message={errors.company?.message} />
           </div>
 
+          {/* Posición */}
           <div className="space-y-2">
             <Label className="text-gray-300 text-sm">Posición *</Label>
             <Input
@@ -176,6 +177,7 @@ export function ExperienceFormAside({
             <ErrorMessage message={errors.position?.message} />
           </div>
 
+          {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-gray-300 text-sm">Fecha Inicio</Label>
@@ -196,15 +198,26 @@ export function ExperienceFormAside({
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
                 <Input
-                  {...register("end_date")}
+                  {...register("end_date", {
+                    validate: (value) => {
+                      if (isCurrentWork) return true;
+                      if (value && startDateValue && value < startDateValue) {
+                        return "No puede ser anterior al inicio";
+                      }
+                      return true;
+                    },
+                  })}
                   type="date"
+                  min={startDateValue} // Restricción visual en el calendario
                   disabled={!isEditing || isCurrentWork || isSubmitting}
-                  className="bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark disabled:opacity-20"
+                  className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark disabled:opacity-20 ${errors.end_date ? "border-red-500" : ""}`}
                 />
               </div>
+              <ErrorMessage message={errors.end_date?.message} />
             </div>
           </div>
 
+          {/* Switch de Trabajo Actual */}
           <div
             className={`flex items-center space-x-2 p-3 rounded-lg border transition-all ${isCurrentWork ? "bg-blue-600/10 border-blue-600/30" : "bg-gray-900/30 border-gray-800"}`}
           >
@@ -216,12 +229,13 @@ export function ExperienceFormAside({
             />
             <label
               htmlFor="current"
-              className="text-sm cursor-pointer text-gray-400"
+              className="text-sm cursor-pointer text-gray-400 font-medium"
             >
               Trabajo actual
             </label>
           </div>
 
+          {/* Descripción */}
           <div className="space-y-2">
             <Label className="text-gray-300 text-sm">Descripción *</Label>
             <Textarea
@@ -235,6 +249,7 @@ export function ExperienceFormAside({
           </div>
         </div>
 
+        {/* Botones */}
         <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 bg-black">
           {initialData && !isEditing ? (
             <div className="grid grid-cols-2 gap-4">

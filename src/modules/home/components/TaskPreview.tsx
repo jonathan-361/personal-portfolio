@@ -1,27 +1,45 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Task } from "@/modules/core/data/dashboard.types";
+import type { TaskResponse } from "@/modules/tasks/models/task.model";
 
-export function TaskPreview({ tasks }: { tasks: Task[] }) {
+interface TaskPreviewProps {
+  tasks: TaskResponse[];
+}
+
+export function TaskPreview({ tasks }: TaskPreviewProps) {
+  const recentTasks = tasks.slice(0, 3);
+
+  if (tasks.length === 0) {
+    return (
+      <p className="text-xs text-gray-600 italic p-1">
+        No hay tareas pendientes.
+      </p>
+    );
+  }
+
   return (
-    <>
-      {tasks.slice(0, 3).map((task) => (
-        <div key={task.id} className="flex items-center gap-3 p-1">
-          <Checkbox
-            checked={task.status === "COMPLETADO"}
-            disabled
-            className="border-gray-700 data-[state=checked]:bg-blue-600"
-          />
-          <p
-            className={`text-sm truncate ${
-              task.status === "COMPLETADO"
-                ? "text-gray-600 line-through"
-                : "text-gray-300"
-            }`}
-          >
-            {task.title}
-          </p>
-        </div>
-      ))}
-    </>
+    <div className="space-y-3">
+      {recentTasks.map((task) => {
+        const isCompleted = task.in_progress === "COMPLETADO";
+
+        return (
+          <div key={task.id} className="flex items-center gap-3 p-1 group">
+            <Checkbox
+              checked={isCompleted}
+              disabled
+              className="border-gray-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 transition-colors"
+            />
+            <p
+              className={`text-sm truncate transition-colors ${
+                isCompleted
+                  ? "text-gray-600 line-through"
+                  : "text-gray-300 group-hover:text-white"
+              }`}
+            >
+              {task.title}
+            </p>
+          </div>
+        );
+      })}
+    </div>
   );
 }

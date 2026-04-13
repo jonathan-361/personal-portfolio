@@ -3,10 +3,10 @@ import { useUserStore } from "@/modules/core/store/user.store";
 import { useAchievementStore } from "@/modules/core/store/achievement.store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionLayout } from "@/components/custom/SectionLayout";
-import { AchievementCard } from "@/modules/achievements/components/AchievementCard";
+import { AchievementSections } from "@/modules/achievements/components/AchievementSections";
 import { AchievementFormAside } from "@/modules/achievements/components/AchievementFormAside";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-import { Trophy, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
 
 export default function AchievementsPage() {
@@ -22,17 +22,6 @@ export default function AchievementsPage() {
   }, [fetchAchievements]);
 
   if (!user) return null;
-
-  const catMap: Record<string, string> = {
-    academic: "ACADEMICO",
-    professional: "PROFESIONAL",
-    personal: "PERSONAL",
-  };
-
-  const getFilteredAchievements = (tabValue: string) => {
-    if (tabValue === "all") return achievements;
-    return achievements.filter((a) => a.achievement_type === catMap[tabValue]);
-  };
 
   const handleOpenAside = (achievement: AchievementResponse | null = null) => {
     setSelectedAchievement(achievement);
@@ -82,44 +71,56 @@ export default function AchievementsPage() {
             </TabsTrigger>
           </TabsList>
 
-          {["all", "academic", "professional", "personal"].map((id) => (
-            <TabsContent
-              key={id}
-              value={id}
-              className="mt-8 outline-none animate-in fade-in duration-500"
-            >
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
-                  <p className="text-gray-500 font-medium">
-                    Cargando tus logros...
-                  </p>
-                </div>
-              ) : getFilteredAchievements(id).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {getFilteredAchievements(id).map((ach) => (
-                    <AchievementCard
-                      key={ach.id}
-                      achievement={ach}
-                      onClick={() => handleOpenAside(ach)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-24 border-2 border-dashed border-gray-800/50 rounded-3xl bg-gray-900/10">
-                  <div className="bg-gray-800/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Trophy className="w-10 h-10 text-gray-700" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-400">
-                    Sin registros
-                  </h3>
-                  <p className="text-gray-600 mt-2 max-w-xs mx-auto">
-                    Aún no has añadido hitos en esta categoría.
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-          ))}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+              <p className="text-gray-500 font-medium">
+                Cargando tus logros...
+              </p>
+            </div>
+          ) : (
+            <>
+              <TabsContent
+                value="all"
+                className="mt-8 outline-none animate-in fade-in duration-500"
+              >
+                <AchievementSections
+                  filterType="ALL"
+                  onEdit={handleOpenAside}
+                />
+              </TabsContent>
+
+              <TabsContent
+                value="academic"
+                className="mt-8 outline-none animate-in fade-in duration-500"
+              >
+                <AchievementSections
+                  filterType="ACADEMICO"
+                  onEdit={handleOpenAside}
+                />
+              </TabsContent>
+
+              <TabsContent
+                value="professional"
+                className="mt-8 outline-none animate-in fade-in duration-500"
+              >
+                <AchievementSections
+                  filterType="PROFESIONAL"
+                  onEdit={handleOpenAside}
+                />
+              </TabsContent>
+
+              <TabsContent
+                value="personal"
+                className="mt-8 outline-none animate-in fade-in duration-500"
+              >
+                <AchievementSections
+                  filterType="PERSONAL"
+                  onEdit={handleOpenAside}
+                />
+              </TabsContent>
+            </>
+          )}
         </Tabs>
       </div>
 
