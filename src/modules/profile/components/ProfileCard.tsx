@@ -78,9 +78,10 @@ export function ProfileCard({ user }: ProfileCardProps) {
             <Avatar className="w-32 h-32 rounded-2xl border-4 border-[#050505] shadow-2xl relative z-10">
               <AvatarImage
                 src={user.profile_image_url || undefined}
-                className="object-cover"
+                className="object-cover rounded-2xl"
               />
-              <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-500 text-white text-3xl font-black rounded-xl">
+              <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-500 text-white text-3xl font-black rounded-2xl">
+                {/* Cambiamos rounded-xl por rounded-2xl para que encaje perfecto */}
                 {getInitials(user)}
               </AvatarFallback>
             </Avatar>

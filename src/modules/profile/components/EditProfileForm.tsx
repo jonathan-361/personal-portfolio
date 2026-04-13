@@ -166,6 +166,20 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
                 </span>
               )}
             </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label className="text-gray-500 text-xs uppercase font-bold flex items-center gap-2">
+                Correo Electrónico
+                <span className="text-[10px] bg-gray-800 px-2 py-0.5 rounded text-gray-400">
+                  No editable
+                </span>
+              </Label>
+              <Input
+                value={user?.email || ""}
+                disabled
+                className="bg-[#0f0f0f] border-gray-900 text-gray-500 cursor-not-allowed opacity-60 border-dashed"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-900">
