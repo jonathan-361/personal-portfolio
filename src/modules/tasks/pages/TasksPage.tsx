@@ -6,13 +6,13 @@ import { useTaskStore } from "@/modules/core/store/task.store";
 import { useUserStore } from "@/modules/core/store/user.store";
 
 export default function TasksPage() {
-  const { tasks, fetchTasks, isLoading } = useTaskStore();
+  const { tasks, fetchMyTasks, isLoading } = useTaskStore();
   const { user } = useUserStore();
   const [isAsideOpen, setIsAsideOpen] = useState(false);
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    fetchMyTasks();
+  }, [fetchMyTasks]);
 
   const columns: {
     title: string;

@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { useTaskStore } from "@/modules/core/store/task.store";
 import { TaskDetails } from "@/modules/tasks/components/TaskDetails";
 import { TASK_STATUS_THEME } from "@/modules/core/data/theme.modules";
-import type { TaskResponse } from "@/modules/tasks/models/task.model";
+import type { Task } from "@/modules/tasks/models/task.model";
 
-export function TaskCard({ task }: { task: TaskResponse }) {
+export function TaskCard({ task }: { task: Task }) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const updateStatus = useTaskStore((state) => state.updateTaskStatus);
 

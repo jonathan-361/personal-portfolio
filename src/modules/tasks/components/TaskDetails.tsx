@@ -28,12 +28,12 @@ import {
   TASK_DETAILS_THEME,
   TASK_STATUS_THEME,
 } from "@/modules/core/data/theme.modules";
-import type { TaskResponse } from "@/modules/tasks/models/task.model";
+import type { Task } from "@/modules/tasks/models/task.model";
 
 interface TaskDetailsProps {
   isOpen: boolean;
   onClose: () => void;
-  task: TaskResponse | null;
+  task: Task | null;
 }
 
 export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {

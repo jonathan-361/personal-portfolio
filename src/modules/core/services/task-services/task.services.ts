@@ -18,8 +18,8 @@ export const taskService = {
   },
 
   // Crea una nueva tarea
-  create: async (data: TaskFormData): Promise<TaskResponse> => {
-    return await api.post<TaskResponse>("/tasks/create", data);
+  create: async (data: TaskFormData): Promise<Task> => {
+    return await api.post<Task>("/tasks/create", data);
   },
 
   // Actualiza una tarea por id

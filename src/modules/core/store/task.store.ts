@@ -17,7 +17,9 @@ interface TaskState {
   isLoading: boolean;
   fetchTasks: () => Promise<void>;
   fetchMyTasks: () => Promise<void>;
+
   updateTaskStatus: (id: number, status: Task["in_progress"]) => Promise<void>;
+  updateTaskInStore: (id: number, updatedFields: Partial<Task>) => void;
   addTask: (task: Task) => void;
   removeTaskFromStore: (id: number) => void;
 }
@@ -67,6 +69,15 @@ export const useTaskStore = create<TaskState>((set) => ({
     }
   },
 
+  addTask: (newTask) => set((state) => ({ tasks: [newTask, ...state.tasks] })),
+
+  updateTaskInStore: (id, updatedFields) =>
+    set((state) => ({
+      tasks: state.tasks.map((t) =>
+        t.id === id ? { ...t, ...updatedFields } : t,
+      ),
+    })),
+
   updateTaskStatus: async (id, status) => {
     try {
       await taskService.update(id, { in_progress: status } as any);
@@ -79,8 +90,6 @@ export const useTaskStore = create<TaskState>((set) => ({
       console.error("Error al actualizar estado de tarea:", error);
     }
   },
-
-  addTask: (newTask) => set((state) => ({ tasks: [newTask, ...state.tasks] })),
 
   removeTaskFromStore: (id) =>
     set((state) => ({
