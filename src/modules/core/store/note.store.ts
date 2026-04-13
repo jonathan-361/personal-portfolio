@@ -6,6 +6,7 @@ interface NoteState {
   notes: NoteResponse[];
   isLoading: boolean;
   fetchNotes: () => Promise<void>;
+  fetchMyNotes: () => Promise<void>;
 }
 
 export const useNoteStore = create<NoteState>((set) => ({
@@ -19,6 +20,19 @@ export const useNoteStore = create<NoteState>((set) => ({
       set({ notes: data });
     } catch (error) {
       console.error("Error al obtener notas:", error);
+      set({ notes: [] });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchMyNotes: async () => {
+    set({ isLoading: true });
+    try {
+      const data = await noteService.getMyNotes();
+      set({ notes: data });
+    } catch (error) {
+      console.error("Error al obtener mis notas:", error);
       set({ notes: [] });
     } finally {
       set({ isLoading: false });

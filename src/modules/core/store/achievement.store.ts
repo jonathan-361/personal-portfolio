@@ -5,7 +5,6 @@ import { achievementService } from "@/modules/core/services/achievement-services
 interface AchievementState {
   achievements: AchievementResponse[];
   isLoading: boolean;
-  // Acciones
   fetchAchievements: () => Promise<void>;
   addAchievement: (achievement: AchievementResponse) => void;
   updateAchievementInStore: (

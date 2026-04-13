@@ -12,8 +12,16 @@ export interface User {
   updated_at?: string;
 }
 
+export interface Pagination {
+  Total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface UsersResponse {
   data: User[];
+  pagination: Pagination;
 }
 
 export interface UpdateUserDto {

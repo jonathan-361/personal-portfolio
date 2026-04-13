@@ -174,3 +174,35 @@ export const TASK_DETAILS_THEME = {
     cancel: "text-gray-400 hover:text-white",
   },
 } as const;
+
+// Temas para el módulo de Directorio de Usuarios
+export const DIRECTORY_THEME = {
+  container:
+    "bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden flex flex-col h-full",
+  table: {
+    header:
+      "bg-gray-950/50 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800",
+    row: "hover:bg-white/[0.02] transition-colors group border-b border-gray-800/50",
+    textPrimary: "text-sm font-bold text-white leading-none",
+    textSecondary: "text-[11px] text-gray-500 mt-1",
+  },
+  roles: {
+    USER: {
+      label: "Usuario",
+      bg: "bg-cyan-500/10",
+      text: "text-cyan-400",
+      border: "border-cyan-500/20",
+    },
+    ADMIN: {
+      label: "Administrador",
+      bg: "bg-purple-500/10",
+      text: "text-purple-400",
+      border: "border-purple-500/20",
+    },
+  },
+  pagination: {
+    wrapper: "p-4 border-t border-gray-800 bg-gray-950/30",
+    active: "bg-cyan-600 text-white hover:bg-cyan-700",
+    inactive: "text-gray-400 hover:bg-gray-800 hover:text-white",
+  },
+} as const;
