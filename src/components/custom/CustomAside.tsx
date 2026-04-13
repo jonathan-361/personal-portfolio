@@ -12,7 +12,7 @@ interface CustomAsideProps {
   isFloating?: boolean;
   headerAction?: ReactNode;
   width?: string;
-  className?: string; // Prop opcional para estilos extra
+  className?: string;
 }
 
 export function CustomAside({
@@ -26,7 +26,6 @@ export function CustomAside({
   width = "w-96",
   className = "",
 }: CustomAsideProps) {
-  // Si es flotante y está cerrado, no renderizamos nada
   if (!isOpen && isFloating) return null;
 
   const hasHeader = title || subtitle || headerAction || onClose;
@@ -38,7 +37,7 @@ export function CustomAside({
         ${
           isFloating
             ? "animate-in slide-in-from-right duration-300"
-            : "hidden lg:flex" // Se oculta en móvil, aparece en desktop (1024px+)
+            : "hidden lg:flex"
         }
         ${className}
       `}

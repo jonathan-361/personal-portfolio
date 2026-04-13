@@ -2,16 +2,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StickyNote, FileText, Clock } from "lucide-react";
 import { formatTime } from "@/lib/formatters";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
-import type { Note } from "@/modules/core/data/dashboard.types";
+import type { NoteResponse } from "@/modules/notes/models/note.model";
 
 interface NoteCardProps {
-  note: Note;
+  note: NoteResponse;
   onClick: () => void;
 }
 
 export function NoteCard({ note, onClick }: NoteCardProps) {
-  const config = NOTE_THEME[note.type as keyof typeof NOTE_THEME];
-  const Icon = note.type === "Apunte" ? FileText : StickyNote;
+  const normalizedType =
+    note.note_type.charAt(0).toUpperCase() +
+    note.note_type.slice(1).toLowerCase();
+
+  const config =
+    NOTE_THEME[normalizedType as keyof typeof NOTE_THEME] || NOTE_THEME.Nota;
+
+  // Decidimos el icono según el tipo
+  const Icon = normalizedType === "Apunte" ? FileText : StickyNote;
 
   return (
     <Card
@@ -34,14 +41,14 @@ export function NoteCard({ note, onClick }: NoteCardProps) {
               className={`w-2 h-2 rounded-full animate-pulse ${config.theme.pulse}`}
             />
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-              {note.type}
+              {normalizedType}
             </span>
           </div>
         </div>
         <CardTitle
           className={`text-lg font-bold text-white truncate transition-colors duration-300 ${config.theme.hover}`}
         >
-          {note.title}
+          {note.title || "Sin título"}
         </CardTitle>
       </CardHeader>
 
