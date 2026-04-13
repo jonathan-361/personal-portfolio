@@ -1,8 +1,8 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import type { TaskResponse } from "@/modules/tasks/models/task.model";
+import type { Task } from "@/modules/tasks/models/task.model";
 
 interface TaskPreviewProps {
-  tasks: TaskResponse[];
+  tasks: Task[];
 }
 
 export function TaskPreview({ tasks }: TaskPreviewProps) {

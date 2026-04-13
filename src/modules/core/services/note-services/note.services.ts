@@ -1,14 +1,14 @@
 import { api } from "@/modules/core/services/axios.instance";
-import type { NoteResponse } from "@/modules/notes/models/note.model";
+import type { Note, NoteResponse } from "@/modules/notes/models/note.model";
 
 export const noteService = {
-  // Traer mis notas
-  getMyNotes: async (): Promise<NoteResponse[]> => {
-    return await api.get<NoteResponse[]>("/notes/me");
+  // Obtener mis notas
+  getMyNotes: async (): Promise<Note[]> => {
+    return await api.get<Note[]>("/notes/me");
   },
 
-  // Traer notas de todos los usuarios
-  getAll: async (): Promise<NoteResponse[]> => {
-    return await api.get<NoteResponse[]>("/notes");
+  // Obtener notas (ADMIN)
+  getAll: async (): Promise<NoteResponse> => {
+    return await api.get<NoteResponse>("/notes");
   },
 };

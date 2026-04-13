@@ -2,22 +2,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StickyNote, FileText, Clock } from "lucide-react";
 import { formatTime } from "@/lib/formatters";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
-import type { NoteResponse } from "@/modules/notes/models/note.model";
+import type { Note } from "@/modules/notes/models/note.model";
 
 interface NoteCardProps {
-  note: NoteResponse;
+  note: Note;
   onClick: () => void;
 }
 
 export function NoteCard({ note, onClick }: NoteCardProps) {
+  // SOLUCIÓN AL ERROR DE COMPARACIÓN:
+  // Forzamos a string para que TS no intente comparar tipos de unión literales disjuntos
+  const type = String(note.note_type);
+
   const normalizedType =
-    note.note_type.charAt(0).toUpperCase() +
-    note.note_type.slice(1).toLowerCase();
+    type === "NOTA" ? "Nota" : type === "APUNTE" ? "Apunte" : "Nota";
 
   const config =
     NOTE_THEME[normalizedType as keyof typeof NOTE_THEME] || NOTE_THEME.Nota;
 
-  // Decidimos el icono según el tipo
   const Icon = normalizedType === "Apunte" ? FileText : StickyNote;
 
   return (

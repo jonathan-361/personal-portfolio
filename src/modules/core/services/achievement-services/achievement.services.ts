@@ -1,20 +1,26 @@
 import { api } from "@/modules/core/services/axios.instance";
 
 import type {
+  Achievement,
   AchievementResponse,
   AchievementMessageResponse,
 } from "@/modules/achievements/models/achievement.model";
 import type { AchievementFormData } from "@/modules/achievements/schemas/achievement.schema";
 
 export const achievementService = {
-  // Obtener todos los logros (en caso de ser admin, trae de todos los usuarios)
-  getAll: async (): Promise<AchievementResponse[]> => {
-    return await api.get<AchievementResponse[]>("/achievements");
+  // Obtener mis logros
+  getMyAchievements: async (): Promise<Achievement[]> => {
+    return await api.get<Achievement[]>("/achievements/me");
+  },
+
+  // Obtener logros (ADMIN)
+  getAll: async (): Promise<AchievementResponse> => {
+    return await api.get<AchievementResponse>("/achievements");
   },
 
   // Crear nuevo logro
-  create: async (data: AchievementFormData): Promise<AchievementResponse> => {
-    return await api.post<AchievementResponse>("/achievements", data);
+  create: async (data: AchievementFormData): Promise<Achievement> => {
+    return await api.post<Achievement>("/achievements/create", data);
   },
 
   // Actualizar logro por ID

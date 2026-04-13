@@ -11,27 +11,35 @@ import { ViewNoteModal } from "@/modules/notes/components/ViewNoteModal";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { useNoteStore } from "@/modules/core/store/note.store";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
-import type { NoteResponse } from "@/modules/notes/models/note.model";
+import type { Note } from "@/modules/notes/models/note.model";
 
 export default function NotesPage() {
   const { user } = useUserStore();
-  const { notes, isLoading, fetchNotes } = useNoteStore();
+  const { notes, isLoading, fetchMyNotes } = useNoteStore();
 
-  const [selectedNote, setSelectedNote] = useState<NoteResponse | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("todo");
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    fetchMyNotes();
+  }, [fetchMyNotes]);
 
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
-      const normalizedType =
-        note.note_type.toLowerCase() === "nota" ? "notas" : "apuntes";
-      const matchesType = filter === "todo" || normalizedType === filter;
+      // CORRECCIÓN: Comparamos contra los valores reales de tu NoteType ("NOTA" | "APUNTE")
+      // Evitamos el .toLowerCase() que rompía la lógica de tipos de TS
+      let matchesType = false;
+
+      if (filter === "todo") {
+        matchesType = true;
+      } else if (filter === "notas") {
+        matchesType = note.note_type === "NOTA";
+      } else if (filter === "apuntes") {
+        matchesType = note.note_type === "APUNTE";
+      }
 
       const matchesSearch =
         note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

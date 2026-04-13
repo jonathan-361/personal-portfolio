@@ -9,7 +9,7 @@ import {
   type LoginFormData,
 } from "@/modules/auth/schemas/login.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
-import { getErrorMessage } from "@/modules/core/error/handle.error"; // Asegúrate de usarlo abajo
+import { getErrorMessage } from "@/modules/core/error/handle.error";
 import paths from "@/modules/core/routes/paths/path";
 import { Button } from "@/components/ui/button";
 import { AuthLayout } from "@/modules/auth/components/AuthLayout";

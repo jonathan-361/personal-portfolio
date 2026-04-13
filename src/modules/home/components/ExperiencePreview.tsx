@@ -1,12 +1,8 @@
 import { Briefcase, Clock } from "lucide-react";
 import { getPreciseTimeElapsed } from "@/lib/dateUtils";
-import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+import type { Experience } from "@/modules/experiences/models/experience.model";
 
-export function ExperiencePreview({
-  currentExp,
-}: {
-  currentExp?: ExperienceResponse;
-}) {
+export function ExperiencePreview({ currentExp }: { currentExp?: Experience }) {
   if (!currentExp) return <FallbackEmpty />;
 
   // Usamos nuestro nuevo util

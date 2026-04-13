@@ -1,43 +1,80 @@
 import { create } from "zustand";
-import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
+import type {
+  Achievement,
+  Pagination,
+  AdminAchievement,
+} from "@/modules/achievements/models/achievement.model";
 import { achievementService } from "@/modules/core/services/achievement-services/achievement.services";
 
+interface StorePagination extends Pagination {
+  Total: number;
+}
+
 interface AchievementState {
-  achievements: AchievementResponse[];
+  achievements: Achievement[];
+  adminData: AdminAchievement[];
+  pagination: StorePagination | null;
   isLoading: boolean;
   fetchAchievements: () => Promise<void>;
-  addAchievement: (achievement: AchievementResponse) => void;
+  fetchMyAchievements: () => Promise<void>;
+  addAchievement: (achievement: Achievement) => void;
   updateAchievementInStore: (
     id: number,
-    updatedData: Partial<AchievementResponse>,
+    updatedData: Partial<Achievement>,
   ) => void;
   removeAchievementFromStore: (id: number) => void;
 }
 
 export const useAchievementStore = create<AchievementState>((set) => ({
   achievements: [],
+  adminData: [],
+  pagination: null,
   isLoading: false,
 
-  // Obtener todos los logros
   fetchAchievements: async () => {
     set({ isLoading: true });
     try {
-      const data = await achievementService.getAll();
-      set({ achievements: data });
+      const response = await achievementService.getAll();
+      const extracted = response.data.map((item) => item.achievement);
+
+      set({
+        achievements: extracted,
+        adminData: response.data,
+        pagination: {
+          ...response.pagination,
+          Total: response.pagination.total,
+        },
+      });
     } catch (error) {
-      console.error("Error fetching achievements:", error);
+      console.error("Error fetching global achievements:", error);
+      set({ achievements: [], adminData: [], pagination: null });
     } finally {
       set({ isLoading: false });
     }
   },
 
-  // Agregar nuevo logro
+  fetchMyAchievements: async () => {
+    set({ isLoading: true });
+    try {
+      const data = await achievementService.getMyAchievements();
+      set({
+        achievements: data,
+        adminData: [],
+        pagination: null,
+      });
+    } catch (error) {
+      console.error("Error fetching my achievements:", error);
+      set({ achievements: [], pagination: null });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   addAchievement: (newAchievement) =>
     set((state) => ({
       achievements: [newAchievement, ...state.achievements],
     })),
 
-  // Actualizar un logro
   updateAchievementInStore: (id, updatedData) =>
     set((state) => ({
       achievements: state.achievements.map((ach) =>
@@ -45,7 +82,6 @@ export const useAchievementStore = create<AchievementState>((set) => ({
       ),
     })),
 
-  // Eliminar un logro
   removeAchievementFromStore: (id) =>
     set((state) => ({
       achievements: state.achievements.filter((ach) => ach.id !== id),

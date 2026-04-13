@@ -1,4 +1,3 @@
-// @/modules/core/error/handle.error.ts
 import axios, { AxiosError } from "axios";
 import { ERROR_MESSAGES } from "@/modules/core/constants/error.messages";
 

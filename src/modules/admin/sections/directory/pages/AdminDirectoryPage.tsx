@@ -6,7 +6,7 @@ import { userService } from "@/modules/core/services/user-services/user.services
 import { getInitials } from "@/lib/getInitials";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Mail, MoreHorizontal, Users } from "lucide-react"; // Importamos Users para el icono
+import { Mail, MoreHorizontal, Users } from "lucide-react";
 import { DIRECTORY_THEME } from "@/modules/core/data/theme.modules";
 import {
   Pagination,
@@ -27,7 +27,7 @@ export function AdminDirectoryPage() {
     if (isAuthenticated) {
       setIsLoading(true);
       userService
-        .getAll({ page: currentPage, limit: 20 })
+        .getAll({ page: currentPage, limit: 10 })
         .then((res) => {
           setUsersData(res.data, res.pagination);
         })

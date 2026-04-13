@@ -7,23 +7,24 @@ import { AchievementSections } from "@/modules/achievements/components/Achieveme
 import { AchievementFormAside } from "@/modules/achievements/components/AchievementFormAside";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
 import { Loader2 } from "lucide-react";
-import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
+import type { Achievement } from "@/modules/achievements/models/achievement.model";
 
 export default function AchievementsPage() {
   const { user } = useUserStore();
-  const { achievements, isLoading, fetchAchievements } = useAchievementStore();
+  const { achievements, isLoading, fetchMyAchievements } =
+    useAchievementStore();
 
   const [isAsideOpen, setIsAsideOpen] = useState(false);
   const [selectedAchievement, setSelectedAchievement] =
-    useState<AchievementResponse | null>(null);
+    useState<Achievement | null>(null);
 
   useEffect(() => {
-    fetchAchievements();
-  }, [fetchAchievements]);
+    fetchMyAchievements();
+  }, [fetchMyAchievements]);
 
   if (!user) return null;
 
-  const handleOpenAside = (achievement: AchievementResponse | null = null) => {
+  const handleOpenAside = (achievement: Achievement | null = null) => {
     setSelectedAchievement(achievement);
     setIsAsideOpen(true);
   };

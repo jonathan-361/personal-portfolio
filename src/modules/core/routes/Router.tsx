@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router";
 import paths from "@/modules/core/routes/paths/path";
 import { ProtectedRoute } from "@/modules/core/routes/ProtectedRoute";
 import { PublicRoute } from "@/modules/core/routes/PublicRoute";
+import { useErrorStore } from "@/modules/core/store/error.store";
+import { ErrorSwitcher } from "@/components/custom/ErrorSwitcher";
 
 import LoginPage from "@/modules/auth/section/login/LoginPage";
 import RegisterPage from "@/modules/auth/section/register/RegisterPage";
@@ -18,21 +20,20 @@ import EditProfilePage from "@/modules/profile/pages/EditProfilePage";
 import { AdminDashboardPage } from "@/modules/admin/sections/home/pages/AdminDashboardPage";
 import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/AdminDirectoryPage";
 
-import { Error400 } from "@/components/custom/errors/error400";
-import { Error401 } from "@/components/custom/errors/error401";
-import { Error403 } from "@/components/custom/errors/error403";
-import { Error404 } from "@/components/custom/errors/error404";
-import { Error500 } from "@/components/custom/errors/error500";
-import { Error501 } from "@/components/custom/errors/error501";
-import { Error502 } from "@/components/custom/errors/error502";
-import { Error503 } from "@/components/custom/errors/error503";
+import Error400 from "@/components/custom/errors/error400";
+import { useEffect } from "react";
 
 export default function AppRouter() {
+  const statusCode = useErrorStore((state) => state.statusCode);
+
+  if (statusCode) {
+    return <ErrorSwitcher />;
+  }
+
   return (
     <Routes>
       <Route element={<PublicRoute />}>
-        <Route path={paths.test2} element={<Error404 />} />
-        <Route path={paths.test} element={<Navigate to={paths.login} />} />
+        <Route path={paths.test2} element={<Error400 />} />
         <Route path={paths.login} element={<LoginPage />} />
         <Route path={paths.register} element={<RegisterPage />} />
         <Route path={paths.changePassword} element={<ChangePassword />} />
@@ -58,6 +59,19 @@ export default function AppRouter() {
         <Route path={paths.profile} element={<ProfilePage />} />
         <Route path={paths.editProfile} element={<EditProfilePage />} />
       </Route>
+
+      <Route path="*" element={<Error404Trigger />} />
+      <Route path="*" element={<Error404Trigger />} />
     </Routes>
   );
 }
+
+const Error404Trigger = () => {
+  const setErrorCode = useErrorStore((state) => state.setErrorCode);
+
+  useEffect(() => {
+    setErrorCode(404);
+  }, [setErrorCode]);
+
+  return null;
+};

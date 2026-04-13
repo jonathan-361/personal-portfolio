@@ -1,6 +1,6 @@
 const paths = {
   test: "/",
-  test2: "test",
+  test2: "/test",
   login: "/login",
   changePassword: "/change-password",
   register: "/register",

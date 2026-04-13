@@ -1,13 +1,24 @@
 import { create } from "zustand";
-import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+import type {
+  Experience,
+  Pagination,
+  AdminExperience,
+} from "@/modules/experiences/models/experience.model";
 import { experienceService } from "@/modules/core/services/experience-services/experience.services";
 import type { ExperienceFormData } from "@/modules/experiences/schemas/experiences.schema";
 
+interface StorePagination extends Pagination {
+  Total: number;
+}
+
 interface ExperienceState {
-  experiences: ExperienceResponse[];
+  experiences: Experience[];
+  adminData: AdminExperience[];
+  pagination: StorePagination | null;
   isLoading: boolean;
 
   fetchExperiences: (signal?: AbortSignal) => Promise<void>;
+  fetchMyExperiences: () => Promise<void>;
   addExperience: (data: ExperienceFormData) => Promise<void>;
   updateExperienceInStore: (
     id: number,
@@ -18,15 +29,47 @@ interface ExperienceState {
 
 export const useExperienceStore = create<ExperienceState>((set) => ({
   experiences: [],
+  adminData: [],
+  pagination: null,
   isLoading: false,
 
+  // Para Administrador
   fetchExperiences: async (signal) => {
     set({ isLoading: true });
     try {
-      const data = await experienceService.getAll(signal);
-      set({ experiences: data });
+      const response = await experienceService.getAll(signal);
+      const extracted = response.data.map((item) => item.experience);
+
+      set({
+        experiences: extracted,
+        adminData: response.data,
+        pagination: {
+          ...response.pagination,
+          Total: response.pagination.total, // Mapeo para el Dashboard
+        },
+      });
     } catch (error) {
-      console.error("Error fetching experiences:", error);
+      if (error instanceof Error && error.name === "CanceledError") return;
+      console.error("Error fetching global experiences:", error);
+      set({ experiences: [], adminData: [], pagination: null });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Para Usuario Normal
+  fetchMyExperiences: async () => {
+    set({ isLoading: true });
+    try {
+      const data = await experienceService.getMyExperiences();
+      set({
+        experiences: data,
+        adminData: [],
+        pagination: null,
+      });
+    } catch (error) {
+      console.error("Error fetching my experiences:", error);
+      set({ experiences: [], pagination: null });
     } finally {
       set({ isLoading: false });
     }

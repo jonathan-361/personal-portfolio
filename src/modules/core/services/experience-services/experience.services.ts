@@ -1,19 +1,25 @@
 import { api } from "@/modules/core/services/axios.instance";
 import type {
+  Experience,
   ExperienceResponse,
   ExperienceMessageResponse,
 } from "@/modules/experiences/models/experience.model";
 import type { ExperienceFormData } from "@/modules/experiences/schemas/experiences.schema";
 
 export const experienceService = {
-  // Obtener todas las experiencias
-  getAll: async (signal?: AbortSignal): Promise<ExperienceResponse[]> => {
-    return await api.get<ExperienceResponse[]>("/experiences", { signal });
+  // Obtener mis experiencias
+  getMyExperiences: async (): Promise<Experience[]> => {
+    return await api.get<Experience[]>("/experiences/me");
+  },
+
+  // Obtener experiencias (ADMIN)
+  getAll: async (signal?: AbortSignal): Promise<ExperienceResponse> => {
+    return await api.get<ExperienceResponse>("/experiences", { signal });
   },
 
   // Crear una nueva experiencia
-  create: async (data: ExperienceFormData): Promise<ExperienceResponse> => {
-    return await api.post<ExperienceResponse>("/experiences", data);
+  create: async (data: ExperienceFormData): Promise<Experience> => {
+    return await api.post<Experience>("/experiences/create", data);
   },
 
   // Actualizar experiencia por ID

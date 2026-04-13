@@ -1,9 +1,9 @@
 import { AchievementCard } from "../components/AchievementCard";
 import { useAchievementStore } from "@/modules/core/store/achievement.store";
-import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
+import type { Achievement } from "@/modules/achievements/models/achievement.model";
 
 interface AchievementSectionsProps {
-  onEdit: (achievement: AchievementResponse) => void;
+  onEdit: (achievement: Achievement) => void;
   filterType: "ALL" | "ACADEMICO" | "PROFESIONAL" | "PERSONAL";
 }
 

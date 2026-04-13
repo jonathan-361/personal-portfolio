@@ -24,7 +24,6 @@ interface AchievementFormAsideProps {
   onSave: () => void;
 }
 
-// Definimos la interfaz para el formulario
 interface AchievementFormValues {
   title: string;
   description: string;
@@ -37,7 +36,11 @@ export function AchievementFormAside({
   onCancel,
   onSave,
 }: AchievementFormAsideProps) {
-  const { addAchievement, updateAchievementInStore } = useAchievementStore();
+  const {
+    addAchievement,
+    updateAchievementInStore,
+    removeAchievementFromStore,
+  } = useAchievementStore();
   const [isEditing, setIsEditing] = useState(!initialData);
 
   const themeToDbMap: Record<string, string> = {
@@ -113,6 +116,24 @@ export function AchievementFormAside({
       onSave();
     } catch (error) {
       toast.error("Hubo un error al conectar con el servidor");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!initialData) return;
+
+    const confirmDelete = confirm(
+      "¿Estás seguro de que deseas eliminar este logro?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await achievementService.delete(initialData.id);
+      removeAchievementFromStore(initialData.id);
+      toast.success("Logro eliminado correctamente");
+      onSave();
+    } catch (error) {
+      toast.error("No se pudo eliminar el logro");
     }
   };
 
@@ -251,6 +272,7 @@ export function AchievementFormAside({
               <Button
                 type="button"
                 variant="ghost"
+                onClick={handleDelete}
                 className="text-red-500 hover:bg-red-600/10 hover:text-white font-bold gap-2"
               >
                 <Trash2 className="w-4 h-4" /> Borrar

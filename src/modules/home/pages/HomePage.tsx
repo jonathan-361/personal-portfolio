@@ -19,10 +19,10 @@ import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 export default function HomePage() {
   const { user, setUser } = useUserStore();
-  const { notes, fetchNotes } = useNoteStore();
-  const { tasks, fetchTasks } = useTaskStore();
-  const { achievements, fetchAchievements } = useAchievementStore();
-  const { experiences, fetchExperiences } = useExperienceStore();
+  const { notes, fetchMyNotes } = useNoteStore();
+  const { tasks, fetchMyTasks } = useTaskStore();
+  const { achievements, fetchMyAchievements } = useAchievementStore();
+  const { experiences, fetchMyExperiences } = useExperienceStore();
 
   const [loading, setLoading] = useState(!user);
 
@@ -35,10 +35,11 @@ export default function HomePage() {
           !user
             ? userService.getMe(controller.signal).then(setUser)
             : Promise.resolve(),
-          fetchNotes(),
-          fetchTasks(),
-          fetchAchievements(),
-          fetchExperiences(controller.signal),
+          fetchMyNotes(),
+
+          fetchMyTasks(),
+          fetchMyAchievements(),
+          fetchMyExperiences(),
         ]);
       } catch (error: any) {
         if (error.name !== "CanceledError" && error.name !== "AbortError") {
@@ -54,10 +55,10 @@ export default function HomePage() {
   }, [
     setUser,
     user,
-    fetchNotes,
-    fetchTasks,
-    fetchAchievements,
-    fetchExperiences,
+    fetchMyNotes,
+    fetchMyTasks,
+    fetchMyAchievements,
+    fetchMyExperiences,
   ]);
 
   const currentExp = experiences.find((e) => !e.end_date);
@@ -86,16 +87,26 @@ export default function HomePage() {
     >
       <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Notas" value={notes.length} type="notes" />
+          <StatCard
+            title="Notas"
+            value={notes.length ?? notes.length}
+            type="notes"
+          />
+
           <StatCard
             title="Logros"
-            value={achievements.length}
+            value={achievements.length ?? achievements.length}
             type="achievements"
           />
-          <StatCard title="Tareas" value={tasks.length} type="tasks" />
+          <StatCard
+            title="Tareas"
+            value={tasks.length ?? tasks.length}
+            type="tasks"
+          />
+
           <StatCard
             title="Experiencia"
-            value={experiences.length}
+            value={experiences.length ?? experiences.length}
             type="experiences"
           />
         </div>

@@ -1,10 +1,10 @@
 import { Clock } from "lucide-react";
 import { formatRelativeTime } from "@/lib/formatters";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
-import type { NoteResponse } from "@/modules/notes/models/note.model";
+import type { Note } from "@/modules/notes/models/note.model";
 
 interface NotePreviewProps {
-  notes: NoteResponse[];
+  notes: Note[];
 }
 
 export function NotePreview({ notes }: NotePreviewProps) {

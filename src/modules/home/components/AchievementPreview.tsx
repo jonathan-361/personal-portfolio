@@ -1,9 +1,9 @@
 // @/modules/home/components/AchievementPreview.tsx
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
+import type { Achievement } from "@/modules/achievements/models/achievement.model";
 
 interface AchievementPreviewProps {
-  achievements: AchievementResponse[];
+  achievements: Achievement[];
 }
 
 export function AchievementPreview({ achievements }: AchievementPreviewProps) {

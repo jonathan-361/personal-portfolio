@@ -1,9 +1,9 @@
 import { Calendar } from "lucide-react";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
-import type { AchievementResponse } from "@/modules/achievements/models/achievement.model";
+import type { Achievement } from "@/modules/achievements/models/achievement.model";
 
 interface AchievementCardProps {
-  achievement: AchievementResponse;
+  achievement: Achievement;
   onClick: () => void;
 }
 
@@ -11,7 +11,6 @@ export function AchievementCard({
   achievement,
   onClick,
 }: AchievementCardProps) {
-  // Mapeamos el Enum de la DB al label que usa tu objeto ACHIEVEMENT_THEME
   const typeMap: Record<string, string> = {
     ACADEMICO: "Académico",
     PROFESIONAL: "Profesional",
@@ -56,7 +55,6 @@ export function AchievementCard({
       <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-tighter relative z-10">
         <Calendar className="w-3.5 h-3.5" />
         <span>
-          {/* Formateamos la fecha si viene de la DB o mostramos fallback */}
           {achievement.achieved_at
             ? new Date(achievement.achieved_at).toLocaleDateString("es-ES", {
                 day: "numeric",
