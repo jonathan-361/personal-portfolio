@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { CustomAside } from "@/components/custom/CustomAside";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Loading from "@/components/custom/Loading";
 import { Edit3, Trash2, Save, Calendar, Loader2 } from "lucide-react";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
 import { useAchievementStore } from "@/modules/core/store/achievement.store";
 import { achievementService } from "@/modules/core/services/achievement-services/achievement.services";
-import { toast } from "sonner";
 
 interface AchievementFormAsideProps {
   initialData?: any;
@@ -41,6 +42,7 @@ export function AchievementFormAside({
     updateAchievementInStore,
     removeAchievementFromStore,
   } = useAchievementStore();
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(!initialData);
 
   const themeToDbMap: Record<string, string> = {
@@ -95,6 +97,7 @@ export function AchievementFormAside({
   }, [initialData, reset]);
 
   const onSubmit = async (data: AchievementFormValues) => {
+    setIsGlobalLoading(true);
     try {
       const dataToSubmit = {
         ...data,
@@ -116,6 +119,8 @@ export function AchievementFormAside({
       onSave();
     } catch (error) {
       toast.error("Hubo un error al conectar con el servidor");
+    } finally {
+      setIsGlobalLoading(false);
     }
   };
 
@@ -126,6 +131,7 @@ export function AchievementFormAside({
       "¿Estás seguro de que deseas eliminar este logro?",
     );
     if (!confirmDelete) return;
+    setIsGlobalLoading(true);
 
     try {
       await achievementService.delete(initialData.id);
@@ -134,6 +140,8 @@ export function AchievementFormAside({
       onSave();
     } catch (error) {
       toast.error("No se pudo eliminar el logro");
+    } finally {
+      setIsGlobalLoading(false);
     }
   };
 
@@ -142,169 +150,179 @@ export function AchievementFormAside({
     ACHIEVEMENT_THEME.Personal;
 
   return (
-    <CustomAside
-      title={initialData ? (isEditing ? "Editar" : "Detalles") : "Nuevo Logro"}
-      subtitle={`LOGRO ${config.label.toUpperCase()}`}
-      onClose={onCancel}
-      headerAction={
-        <div
-          className={`p-2 rounded-lg ${config.theme.bgStrong} border ${config.theme.iconBorder} transition-all duration-300`}
+    <>
+      <CustomAside
+        title={
+          initialData ? (isEditing ? "Editar" : "Detalles") : "Nuevo Logro"
+        }
+        subtitle={`LOGRO ${config.label.toUpperCase()}`}
+        onClose={onCancel}
+        headerAction={
+          <div
+            className={`p-2 rounded-lg ${config.theme.bgStrong} border ${config.theme.iconBorder} transition-all duration-300`}
+          >
+            <config.icon className={`w-5 h-5 ${config.theme.text}`} />
+          </div>
+        }
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col h-full"
         >
-          <config.icon className={`w-5 h-5 ${config.theme.text}`} />
-        </div>
-      }
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
-        <div className="space-y-5 flex-1">
-          {/* Título */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm font-medium">
-              Título <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              {...register("title", { required: "El título es obligatorio" })}
-              disabled={!isEditing || isSubmitting}
-              placeholder="Ej. Certificación AWS"
-              className={`bg-[#0f0f0f] border-gray-800 text-white focus:ring-1 focus:ring-purple-500 ${errors.title ? "border-red-500/50" : ""}`}
-            />
-            {errors.title && (
-              <p className="text-[10px] text-red-400 font-medium">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
-
-          {/* Categoría */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm font-medium">
-              Categoría <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              disabled={!isEditing || isSubmitting}
-              // Solución al error de tipos: forzamos el valor a string o fallback
-              onValueChange={(v) =>
-                setValue("achievement_type", v || "Personal")
-              }
-              value={selectedTheme}
-            >
-              <SelectTrigger
-                className={`bg-[#0f0f0f] border-gray-800 text-white ${errors.achievement_type ? "border-red-500/50" : ""}`}
-              >
-                <SelectValue placeholder="Selecciona categoría" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-800 text-white">
-                {Object.keys(ACHIEVEMENT_THEME).map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* Registro del campo para validación */}
-            <input
-              type="hidden"
-              {...register("achievement_type", {
-                required: "La categoría es obligatoria",
-              })}
-            />
-            {errors.achievement_type && (
-              <p className="text-[10px] text-red-400 font-medium">
-                {errors.achievement_type.message}
-              </p>
-            )}
-          </div>
-
-          {/* Fecha */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm font-medium">
-              Fecha <span className="text-red-500">*</span>
-            </Label>
-            <div className="relative group">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white z-10 pointer-events-none" />
+          <div className="space-y-5 flex-1">
+            {/* Título */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm font-medium">
+                Título <span className="text-red-500">*</span>
+              </Label>
               <Input
-                {...register("achieved_at", {
-                  required: "La fecha es obligatoria",
-                })}
-                type="date"
+                {...register("title", { required: "El título es obligatorio" })}
                 disabled={!isEditing || isSubmitting}
-                className={`bg-[#0f0f0f] border-gray-800 pl-10 text-white w-full scheme-dark [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer ${errors.achieved_at ? "border-red-500/50" : ""}`}
+                placeholder="Ej. Certificación AWS"
+                className={`bg-[#0f0f0f] border-gray-800 text-white focus:ring-1 focus:ring-purple-500 ${errors.title ? "border-red-500/50" : ""}`}
               />
+              {errors.title && (
+                <p className="text-[10px] text-red-400 font-medium">
+                  {errors.title.message}
+                </p>
+              )}
             </div>
-            {errors.achieved_at && (
-              <p className="text-[10px] text-red-400 font-medium">
-                {errors.achieved_at.message}
-              </p>
-            )}
+
+            {/* Categoría */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm font-medium">
+                Categoría <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                disabled={!isEditing || isSubmitting}
+                // Solución al error de tipos: forzamos el valor a string o fallback
+                onValueChange={(v) =>
+                  setValue("achievement_type", v || "Personal")
+                }
+                value={selectedTheme}
+              >
+                <SelectTrigger
+                  className={`bg-[#0f0f0f] border-gray-800 text-white ${errors.achievement_type ? "border-red-500/50" : ""}`}
+                >
+                  <SelectValue placeholder="Selecciona categoría" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-gray-800 text-white">
+                  {Object.keys(ACHIEVEMENT_THEME).map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* Registro del campo para validación */}
+              <input
+                type="hidden"
+                {...register("achievement_type", {
+                  required: "La categoría es obligatoria",
+                })}
+              />
+              {errors.achievement_type && (
+                <p className="text-[10px] text-red-400 font-medium">
+                  {errors.achievement_type.message}
+                </p>
+              )}
+            </div>
+
+            {/* Fecha */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm font-medium">
+                Fecha <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative group">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white z-10 pointer-events-none" />
+                <Input
+                  {...register("achieved_at", {
+                    required: "La fecha es obligatoria",
+                  })}
+                  type="date"
+                  disabled={!isEditing || isSubmitting}
+                  className={`bg-[#0f0f0f] border-gray-800 pl-10 text-white w-full scheme-dark [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer ${errors.achieved_at ? "border-red-500/50" : ""}`}
+                />
+              </div>
+              {errors.achieved_at && (
+                <p className="text-[10px] text-red-400 font-medium">
+                  {errors.achieved_at.message}
+                </p>
+              )}
+            </div>
+
+            {/* Descripción */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm font-medium">
+                Descripción <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                {...register("description", {
+                  required: "La descripción es obligatoria",
+                })}
+                disabled={!isEditing || isSubmitting}
+                placeholder="¿Qué lograste?"
+                className={`bg-[#0f0f0f] border-gray-800 text-white resize-none 
+                           min-h-[120px] max-h-[250px] overflow-y-auto 
+                           ${errors.description ? "border-red-500/50" : ""}`}
+              />
+              {errors.description && (
+                <p className="text-[10px] text-red-400 font-medium">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Descripción */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm font-medium">
-              Descripción <span className="text-red-500">*</span>
-            </Label>
-            <Textarea
-              {...register("description", {
-                required: "La descripción es obligatoria",
-              })}
-              disabled={!isEditing || isSubmitting}
-              placeholder="¿Qué lograste?"
-              className={`bg-[#0f0f0f] border-gray-800 min-h-[120px] text-white resize-none ${errors.description ? "border-red-500/50" : ""}`}
-            />
-            {errors.description && (
-              <p className="text-[10px] text-red-400 font-medium">
-                {errors.description.message}
-              </p>
+          {/* Botones de acción */}
+          <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 mt-6">
+            {initialData && !isEditing ? (
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className={`text-white font-bold gap-2 transition-all duration-300 ${config.theme.button}`}
+                >
+                  <Edit3 className="w-4 h-4" /> Editar
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleDelete}
+                  className="text-red-500 hover:bg-red-600/10 hover:text-white font-bold gap-2"
+                >
+                  <Trash2 className="w-4 h-4" /> Borrar
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-white text-black hover:bg-gray-200 font-bold gap-2"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  {initialData ? "Guardar Cambios" : "Guardar Logro"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={isSubmitting}
+                  onClick={initialData ? () => setIsEditing(false) : onCancel}
+                  className="text-gray-500 hover:text-black"
+                >
+                  Cancelar
+                </Button>
+              </>
             )}
           </div>
-        </div>
-
-        {/* Botones de acción */}
-        <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 mt-6">
-          {initialData && !isEditing ? (
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className={`text-white font-bold gap-2 transition-all duration-300 ${config.theme.button}`}
-              >
-                <Edit3 className="w-4 h-4" /> Editar
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleDelete}
-                className="text-red-500 hover:bg-red-600/10 hover:text-white font-bold gap-2"
-              >
-                <Trash2 className="w-4 h-4" /> Borrar
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-white text-black hover:bg-gray-200 font-bold gap-2"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                {initialData ? "Guardar Cambios" : "Guardar Logro"}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={isSubmitting}
-                onClick={initialData ? () => setIsEditing(false) : onCancel}
-                className="text-gray-500 hover:text-black"
-              >
-                Cancelar
-              </Button>
-            </>
-          )}
-        </div>
-      </form>
-    </CustomAside>
+        </form>
+      </CustomAside>
+      {isGlobalLoading && <Loading />}
+    </>
   );
 }

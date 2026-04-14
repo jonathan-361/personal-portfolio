@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { CustomAside } from "@/components/custom/CustomAside";
 import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
+import Loading from "@/components/custom/Loading";
 import { useExperienceStore } from "@/modules/core/store/experience.store";
 import { toast } from "sonner";
 import type { Experience } from "@/modules/experiences/models/experience.model";
@@ -53,6 +54,7 @@ export function ExperienceFormAside({
     useExperienceStore();
 
   const [isEditing, setIsEditing] = useState(!initialData);
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const {
@@ -106,6 +108,7 @@ export function ExperienceFormAside({
   };
 
   const onSubmit = async (data: ExperienceFormValues) => {
+    setIsGlobalLoading(true);
     try {
       const dataToSubmit = {
         company: data.company,
@@ -126,17 +129,23 @@ export function ExperienceFormAside({
       onSave();
     } catch (error) {
       toast.error("Error al procesar la solicitud");
+    } finally {
+      setIsGlobalLoading(false);
     }
   };
 
   const handleDelete = async () => {
     if (!initialData) return;
+    setIsAlertOpen(false);
+    setIsGlobalLoading(true);
     try {
       await removeExperienceFromStore(initialData.id);
       toast.success("Experiencia eliminada");
       onSave();
     } catch (error) {
       toast.error("No se pudo eliminar el registro");
+    } finally {
+      setIsGlobalLoading(false);
     }
   };
 
@@ -261,13 +270,15 @@ export function ExperienceFormAside({
 
             {/* Descripción */}
             <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Descripción *</Label>
+              <Label className="text-gray-300 text-sm font-bold uppercase tracking-tighter text-[10px]">
+                Descripción *
+              </Label>
               <Textarea
                 {...register("description", {
                   required: "Escribe una breve descripción",
                 })}
                 disabled={!isEditing || isSubmitting}
-                className={`bg-[#0f0f0f] border-gray-800 min-h-32 resize-none ${
+                className={`bg-[#0f0f0f] border-gray-800 resize-none min-h-[120px] max-h-[250px] overflow-y-auto ${
                   errors.description ? "border-red-500" : ""
                 }`}
               />
@@ -333,6 +344,7 @@ export function ExperienceFormAside({
         confirmText="Eliminar"
         onConfirm={handleDelete}
       />
+      {isGlobalLoading && <Loading />}
     </>
   );
 }

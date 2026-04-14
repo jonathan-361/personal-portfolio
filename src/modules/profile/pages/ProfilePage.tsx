@@ -25,9 +25,6 @@ export default function ProfilePage() {
     };
     fetchUpdatedProfile();
   }, [setUser]);
-
-  // Si no hay usuario y estamos cargando, mostrar spinner
-  // Esto evita el pantallazo blanco si el store está vacío al inicio
   if (!user && isSyncing) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
@@ -36,7 +33,6 @@ export default function ProfilePage() {
     );
   }
 
-  // Si definitivamente no hay usuario, no renderizar nada sensible
   if (!user) return null;
 
   return (

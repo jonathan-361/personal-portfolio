@@ -55,46 +55,53 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout title="Iniciar sesión">
+    <>
+      <AuthLayout title="Iniciar sesión">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+          noValidate
+        >
+          <FormField
+            label="Correo electrónico"
+            type="email"
+            placeholder="Escribe un correo"
+            {...register("email")}
+            error={errors.email?.message}
+          />
+
+          <FormField
+            label="Contraseña"
+            type="password"
+            placeholder="Escribe tu contraseña"
+            {...register("password")}
+            error={
+              touchedFields.password ? errors.password?.message : undefined
+            }
+          />
+
+          <p className="text-right text-primary hover:underline font-medium text-sm">
+            <Link to={paths.changePassword}>¿Olvidaste tu contraseña?</Link>
+          </p>
+
+          <Button type="submit" className="w-full h-10" disabled={isLoading}>
+            {isLoading ? "Cargando..." : "Iniciar sesión"}
+          </Button>
+        </form>
+
+        <div className="mt-4">
+          <p className="text-center text-sm text-muted-foreground">
+            ¿No tienes cuenta?{" "}
+            <Link
+              to={paths.register}
+              className="text-primary hover:underline font-medium"
+            >
+              Regístrate
+            </Link>
+          </p>
+        </div>
+      </AuthLayout>
       {isLoading && <Loading />}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <FormField
-          label="Correo electrónico"
-          type="email"
-          placeholder="Escribe un correo"
-          {...register("email")}
-          error={errors.email?.message}
-        />
-
-        <FormField
-          label="Contraseña"
-          type="password"
-          placeholder="Escribe tu contraseña"
-          {...register("password")}
-          error={touchedFields.password ? errors.password?.message : undefined}
-        />
-
-        <p className="text-right text-primary hover:underline font-medium text-sm">
-          <Link to={paths.changePassword}>¿Olvidaste tu contraseña?</Link>
-        </p>
-
-        <Button type="submit" className="w-full h-10" disabled={isLoading}>
-          {isLoading ? "Cargando..." : "Iniciar sesión"}
-        </Button>
-      </form>
-
-      <div className="mt-4">
-        <p className="text-center text-sm text-muted-foreground">
-          ¿No tienes cuenta?{" "}
-          <Link
-            to={paths.register}
-            className="text-primary hover:underline font-medium"
-          >
-            Regístrate
-          </Link>
-        </p>
-      </div>
-    </AuthLayout>
+    </>
   );
 }

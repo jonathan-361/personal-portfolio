@@ -66,7 +66,13 @@ export function ExperienceCard({ exp, onClick }: ExperienceCardProps) {
           </div>
         </div>
 
-        <p className="text-gray-400/80 text-sm leading-relaxed border-l-2 border-white/10 pl-4 py-1 italic wrap-break-word whitespace-pre-wrap group-hover:border-blue-500/30 transition-colors">
+        <p
+          className={`
+          text-gray-400/80 text-sm leading-relaxed border-l-2 border-white/10 pl-4 py-1 italic 
+          transition-colors group-hover:border-blue-500/30
+          line-clamp-2 overflow-hidden text-ellipsis
+        `}
+        >
           {exp.description || "Sin descripción de responsabilidades."}
         </p>
       </div>

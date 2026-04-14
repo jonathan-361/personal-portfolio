@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
+import Loading from "@/components/custom/Loading";
 import {
   TASK_DETAILS_THEME,
   TASK_STATUS_THEME,
@@ -72,6 +73,7 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
   const handleSave = async () => {
     if (!formValues.title.trim())
       return toast.error("El título es obligatorio");
+
     setIsLoading(true);
     try {
       const payload = {
@@ -92,6 +94,8 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
   };
 
   const handleDelete = async () => {
+    setIsAlertOpen(false);
+    setIsLoading(true);
     try {
       await taskService.delete(task.id);
       removeTaskFromStore(task.id);
@@ -100,6 +104,8 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
       onClose();
     } catch (error) {
       toast.error("No se pudo eliminar la tarea");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -190,7 +196,8 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
                     description: e.target.value,
                   }))
                 }
-                className={`${theme.input} min-h-[100px] resize-none text-sm ${!isEditing ? readOnlyStyles : ""}`}
+                className={`${theme.input} min-h-[120px] max-h-[200px] resize-none text-sm overflow-y-auto custom-scrollbar
+                           ${!isEditing ? readOnlyStyles : ""}`}
                 placeholder="Sin descripción..."
               />
             </div>
@@ -244,6 +251,7 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
         confirmText="Confirmar Eliminación"
         onConfirm={handleDelete}
       />
+      {isLoading && <Loading />}
     </>
   );
 }

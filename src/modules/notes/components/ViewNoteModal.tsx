@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { toast } from "sonner";
+import { Clock, Pencil, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,11 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Pencil, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
+import Loading from "@/components/custom/Loading";
 import { useNoteStore } from "@/modules/core/store/note.store";
 import { noteService } from "@/modules/core/services/note-services/note.services";
-import { toast } from "sonner";
 
 import type { Note } from "@/modules/notes/models/note.model";
 import { formatDate } from "@/lib/formatters";
@@ -47,14 +48,11 @@ export function ViewNoteModal({
     NOTE_THEME[normalizedType as keyof typeof NOTE_THEME] || NOTE_THEME.Nota;
 
   const handleDelete = async () => {
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
-
       await noteService.delete(note.id);
       removeNoteFromStore(note.id);
-
       toast.success("Nota eliminada");
-
       setIsAlertOpen(false);
       onClose();
     } catch (error) {
@@ -130,6 +128,7 @@ export function ViewNoteModal({
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />
+      {isDeleting && <Loading isFullPage={true} />}
     </>
   );
 }
