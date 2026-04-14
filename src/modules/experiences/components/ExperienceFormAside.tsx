@@ -15,6 +15,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { CustomAside } from "@/components/custom/CustomAside";
+import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
 import { useExperienceStore } from "@/modules/core/store/experience.store";
 import { toast } from "sonner";
 import type { Experience } from "@/modules/experiences/models/experience.model";
@@ -52,6 +53,7 @@ export function ExperienceFormAside({
     useExperienceStore();
 
   const [isEditing, setIsEditing] = useState(!initialData);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const {
     register,
@@ -139,163 +141,198 @@ export function ExperienceFormAside({
   };
 
   return (
-    <CustomAside
-      title={
-        initialData ? (isEditing ? "Editar" : "Detalles") : "Nueva Experiencia"
-      }
-      subtitle={isEditing ? "Formulario de Registro" : "Vista de Experiencia"}
-      onClose={onCancel}
-      headerAction={
-        <div className="p-2 rounded-lg bg-blue-600/10 border border-blue-600/20">
-          <Briefcase className="w-5 h-5 text-blue-500" />
-        </div>
-      }
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
-        <div className="space-y-5 flex-1 text-white">
-          {/* Compañía */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Compañía *</Label>
-            <Input
-              {...register("company", {
-                required: "La compañía es obligatoria",
-              })}
-              disabled={!isEditing || isSubmitting}
-              className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${errors.company ? "border-red-500" : ""}`}
-            />
-            <ErrorMessage message={errors.company?.message} />
+    <>
+      <CustomAside
+        title={
+          initialData
+            ? isEditing
+              ? "Editar"
+              : "Detalles"
+            : "Nueva Experiencia"
+        }
+        subtitle={isEditing ? "Formulario de Registro" : "Vista de Experiencia"}
+        onClose={onCancel}
+        headerAction={
+          <div className="p-2 rounded-lg bg-blue-600/10 border border-blue-600/20">
+            <Briefcase className="w-5 h-5 text-blue-500" />
           </div>
-
-          {/* Posición */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Posición *</Label>
-            <Input
-              {...register("position", { required: "El cargo es obligatorio" })}
-              disabled={!isEditing || isSubmitting}
-              className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${errors.position ? "border-red-500" : ""}`}
-            />
-            <ErrorMessage message={errors.position?.message} />
-          </div>
-
-          {/* Fechas */}
-          <div className="grid grid-cols-2 gap-4">
+        }
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col h-full"
+        >
+          <div className="space-y-5 flex-1 text-white">
+            {/* Compañía */}
             <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Fecha Inicio</Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
-                <Input
-                  {...register("start_date", { required: "Requerido" })}
-                  type="date"
-                  disabled={!isEditing || isSubmitting}
-                  className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark ${errors.start_date ? "border-red-500" : ""}`}
-                />
-              </div>
-              <ErrorMessage message={errors.start_date?.message} />
+              <Label className="text-gray-300 text-sm">Compañía *</Label>
+              <Input
+                {...register("company", {
+                  required: "La compañía es obligatoria",
+                })}
+                disabled={!isEditing || isSubmitting}
+                className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${
+                  errors.company ? "border-red-500" : ""
+                }`}
+              />
+              <ErrorMessage message={errors.company?.message} />
             </div>
 
+            {/* Posición */}
             <div className="space-y-2">
-              <Label className="text-gray-300 text-sm">Fecha Fin</Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
-                <Input
-                  {...register("end_date", {
-                    validate: (value) => {
-                      if (isCurrentWork) return true;
-                      if (value && startDateValue && value < startDateValue) {
-                        return "No puede ser anterior al inicio";
-                      }
-                      return true;
-                    },
-                  })}
-                  type="date"
-                  min={startDateValue} // Restricción visual en el calendario
-                  disabled={!isEditing || isCurrentWork || isSubmitting}
-                  className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark disabled:opacity-20 ${errors.end_date ? "border-red-500" : ""}`}
-                />
-              </div>
-              <ErrorMessage message={errors.end_date?.message} />
+              <Label className="text-gray-300 text-sm">Posición *</Label>
+              <Input
+                {...register("position", {
+                  required: "El cargo es obligatorio",
+                })}
+                disabled={!isEditing || isSubmitting}
+                className={`bg-[#0f0f0f] border-gray-800 focus-visible:ring-blue-500/50 ${
+                  errors.position ? "border-red-500" : ""
+                }`}
+              />
+              <ErrorMessage message={errors.position?.message} />
             </div>
-          </div>
 
-          {/* Switch de Trabajo Actual */}
-          <div
-            className={`flex items-center space-x-2 p-3 rounded-lg border transition-all ${isCurrentWork ? "bg-blue-600/10 border-blue-600/30" : "bg-gray-900/30 border-gray-800"}`}
-          >
-            <Checkbox
-              id="current"
-              disabled={!isEditing || isSubmitting}
-              checked={isCurrentWork}
-              onCheckedChange={handleCurrentChange}
-            />
-            <label
-              htmlFor="current"
-              className="text-sm cursor-pointer text-gray-400 font-medium"
-            >
-              Trabajo actual
-            </label>
-          </div>
-
-          {/* Descripción */}
-          <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Descripción *</Label>
-            <Textarea
-              {...register("description", {
-                required: "Escribe una breve descripción",
-              })}
-              disabled={!isEditing || isSubmitting}
-              className={`bg-[#0f0f0f] border-gray-800 min-h-32 resize-none ${errors.description ? "border-red-500" : ""}`}
-            />
-            <ErrorMessage message={errors.description?.message} />
-          </div>
-        </div>
-
-        {/* Botones */}
-        <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 bg-black">
-          {initialData && !isEditing ? (
+            {/* Fechas */}
             <div className="grid grid-cols-2 gap-4">
-              <Button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="bg-blue-600 hover:bg-blue-700 font-bold gap-2"
-              >
-                <Edit3 className="w-4 h-4" /> Editar
-              </Button>
-              <Button
-                type="button"
-                onClick={handleDelete}
-                variant="ghost"
-                className="text-red-500 hover:bg-red-600/10 font-bold gap-2"
-              >
-                <Trash2 className="w-4 h-4" /> Borrar
-              </Button>
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Fecha Inicio</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
+                  <Input
+                    {...register("start_date", { required: "Requerido" })}
+                    type="date"
+                    disabled={!isEditing || isSubmitting}
+                    className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark ${
+                      errors.start_date ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage message={errors.start_date?.message} />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-300 text-sm">Fecha Fin</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500 z-10 pointer-events-none" />
+                  <Input
+                    {...register("end_date", {
+                      validate: (value) => {
+                        if (isCurrentWork) return true;
+                        if (value && startDateValue && value < startDateValue) {
+                          return "No puede ser anterior al inicio";
+                        }
+                        return true;
+                      },
+                    })}
+                    type="date"
+                    min={startDateValue}
+                    disabled={!isEditing || isCurrentWork || isSubmitting}
+                    className={`bg-[#0f0f0f] border-gray-800 pl-10 text-[12px] scheme-dark disabled:opacity-20 ${
+                      errors.end_date ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage message={errors.end_date?.message} />
+              </div>
             </div>
-          ) : (
-            <>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-white text-black hover:bg-gray-200 font-bold gap-2"
+
+            {/* Trabajo actual */}
+            <div
+              className={`flex items-center space-x-2 p-3 rounded-lg border transition-all ${
+                isCurrentWork
+                  ? "bg-blue-600/10 border-blue-600/30"
+                  : "bg-gray-900/30 border-gray-800"
+              }`}
+            >
+              <Checkbox
+                id="current"
+                disabled={!isEditing || isSubmitting}
+                checked={isCurrentWork}
+                onCheckedChange={handleCurrentChange}
+              />
+              <label
+                htmlFor="current"
+                className="text-sm cursor-pointer text-gray-400 font-medium"
               >
-                {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                {initialData ? "Guardar Cambios" : "Guardar Experiencia"}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={isSubmitting}
-                onClick={initialData ? () => setIsEditing(false) : onCancel}
-                className="w-full text-gray-500"
-              >
-                Cancelar
-              </Button>
-            </>
-          )}
-        </div>
-      </form>
-    </CustomAside>
+                Trabajo actual
+              </label>
+            </div>
+
+            {/* Descripción */}
+            <div className="space-y-2">
+              <Label className="text-gray-300 text-sm">Descripción *</Label>
+              <Textarea
+                {...register("description", {
+                  required: "Escribe una breve descripción",
+                })}
+                disabled={!isEditing || isSubmitting}
+                className={`bg-[#0f0f0f] border-gray-800 min-h-32 resize-none ${
+                  errors.description ? "border-red-500" : ""
+                }`}
+              />
+              <ErrorMessage message={errors.description?.message} />
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="pt-6 border-t border-gray-800 flex flex-col gap-3 bg-black">
+            {initialData && !isEditing ? (
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 hover:bg-blue-700 font-bold gap-2"
+                >
+                  <Edit3 className="w-4 h-4" /> Editar
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={() => setIsAlertOpen(true)}
+                  variant="ghost"
+                  className="text-red-500 hover:bg-red-600/10 hover:text-white font-bold gap-2"
+                >
+                  <Trash2 className="w-4 h-4" /> Borrar
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-white text-black hover:bg-gray-200 font-bold gap-2"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  {initialData ? "Guardar Cambios" : "Guardar Experiencia"}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={isSubmitting}
+                  onClick={initialData ? () => setIsEditing(false) : onCancel}
+                  className="w-full text-gray-500"
+                >
+                  Cancelar
+                </Button>
+              </>
+            )}
+          </div>
+        </form>
+      </CustomAside>
+      <ConfirmDialog
+        open={isAlertOpen}
+        onOpenChange={setIsAlertOpen}
+        title="¿Eliminar experiencia?"
+        description={`Se eliminará permanentemente la experiencia en "${initialData?.company}".`}
+        confirmText="Eliminar"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

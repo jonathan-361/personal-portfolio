@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import { Calendar, Clock, Trash2, Edit3, Save } from "lucide-react";
+import { toast } from "sonner";
+import { useTaskStore } from "@/modules/core/store/task.store";
+import { taskService } from "@/modules/core/services/task-services/task.services";
+import type { Task } from "@/modules/tasks/models/task.model";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +25,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, Trash2, Edit3, Save } from "lucide-react";
-import { useTaskStore } from "@/modules/core/store/task.store";
-import { taskService } from "@/modules/core/services/task-services/task.services";
-import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
 import {
   TASK_DETAILS_THEME,
   TASK_STATUS_THEME,
 } from "@/modules/core/data/theme.modules";
-import type { Task } from "@/modules/tasks/models/task.model";
 
 interface TaskDetailsProps {
   isOpen: boolean;
@@ -65,7 +66,6 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
   const statusStyle =
     TASK_STATUS_THEME[task.in_progress as keyof typeof TASK_STATUS_THEME];
 
-  // Estilo para campos cuando no se está editando (efecto "bloqueado" gris)
   const readOnlyStyles =
     "disabled:bg-black/40 disabled:border-white/5 disabled:text-gray-500 disabled:opacity-100";
 
@@ -236,30 +236,14 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent className="bg-black border border-white/10 text-white shadow-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">
-              ¿Eliminar actividad?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              Esta acción eliminará permanentemente la tarea{" "}
-              <span className="text-white font-medium">"{task.title}"</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 bg-black">
-            <AlertDialogCancel className="bg-transparent border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition-all">
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white border-none"
-            >
-              Confirmar Eliminación
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={isAlertOpen}
+        onOpenChange={setIsAlertOpen}
+        title="¿Eliminar actividad?"
+        description={`Esta acción eliminará permanentemente la tarea "${task.title}".`}
+        confirmText="Confirmar Eliminación"
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

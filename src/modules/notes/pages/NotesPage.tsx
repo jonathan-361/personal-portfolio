@@ -29,8 +29,6 @@ export default function NotesPage() {
 
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
-      // CORRECCIÓN: Comparamos contra los valores reales de tu NoteType ("NOTA" | "APUNTE")
-      // Evitamos el .toLowerCase() que rompía la lógica de tipos de TS
       let matchesType = false;
 
       if (filter === "todo") {

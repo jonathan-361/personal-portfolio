@@ -176,19 +176,19 @@ export function AdminDirectoryPage() {
                           <StatBadge
                             icon={CheckSquare}
                             count={taskCount}
-                            color="text-amber-400"
+                            color="text-blue-400"
                             label="Tareas"
                           />
                           <StatBadge
                             icon={Trophy}
                             count={achCount}
-                            color="text-green-400"
+                            color="text-amber-400"
                             label="Logros"
                           />
                           <StatBadge
                             icon={Briefcase}
                             count={expCount}
-                            color="text-blue-400"
+                            color="text-green-400"
                             label="Exp"
                           />
                         </div>
