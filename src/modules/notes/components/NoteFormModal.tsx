@@ -18,7 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Note } from "@/modules/core/data/dashboard.types";
+import { toast } from "sonner";
+import type { Note, NoteType } from "@/modules/notes/models/note.model";
+import { useNoteStore } from "@/modules/core/store/note.store";
+import { noteService } from "@/modules/core/services/note-services/note.services";
 
 interface NoteFormModalProps {
   isOpen: boolean;
@@ -31,38 +34,50 @@ export function NoteFormModal({
   onClose,
   editNote,
 }: NoteFormModalProps) {
+  const { addNoteToStore, updateNoteInStore } = useNoteStore();
   const [loading, setLoading] = useState(false);
   const isEditing = !!editNote;
 
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState("Apunte");
+  const [content, setContent] = useState("");
+  const [type, setType] = useState<NoteType>("APUNTE");
 
   useEffect(() => {
     if (isEditing && editNote) {
       setTitle(editNote.title);
-      setDescription(editNote.content || "");
-
-      if (editNote.type) {
-        const formattedType =
-          editNote.type.charAt(0).toUpperCase() + editNote.type.slice(1);
-        setType(formattedType);
-      }
+      setContent(editNote.content || "");
+      setType(editNote.note_type);
     } else {
       setTitle("");
-      setDescription("");
-      setType("Apunte");
+      setContent("");
+      setType("APUNTE");
     }
   }, [editNote, isOpen, isEditing]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!title.trim() || !content.trim())
+      return toast.error("Completa todos los campos");
 
-    setTimeout(() => {
-      setLoading(false);
+    setLoading(true);
+    try {
+      const payload = { title, content, note_type: type };
+
+      if (isEditing && editNote) {
+        await noteService.update(editNote.id, payload);
+        updateNoteInStore(editNote.id, payload);
+        toast.success("Nota actualizada");
+      } else {
+        const newNote = await noteService.create(payload);
+        addNoteToStore(newNote);
+        toast.success("Nota creada");
+      }
       onClose();
-    }, 1000);
+    } catch (error) {
+      toast.error("Error al procesar la solicitud");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,8 +92,8 @@ export function NoteFormModal({
           </DialogTitle>
           <DialogDescription className="text-gray-400">
             {isEditing
-              ? "Modifica los detalles de tu apunte."
-              : "Crea un nuevo apunte o nota para tu portafolio."}
+              ? "Modifica los detalles de tu nota."
+              : "Crea un nuevo apunte o nota."}
           </DialogDescription>
         </DialogHeader>
 
@@ -114,13 +129,13 @@ export function NoteFormModal({
               </SelectTrigger>
               <SelectContent className="bg-[#0f0f0f] border-gray-800 shadow-2xl">
                 <SelectItem
-                  value="Apunte"
+                  value="APUNTE"
                   className="text-white cursor-pointer focus:bg-gray-800"
                 >
                   Apunte
                 </SelectItem>
                 <SelectItem
-                  value="Nota"
+                  value="NOTA"
                   className="text-white cursor-pointer focus:bg-gray-800"
                 >
                   Nota
@@ -135,8 +150,8 @@ export function NoteFormModal({
             </Label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Escribe aquí el contenido..."
               required
               className="bg-gray-900 border-gray-800 focus-visible:ring-blue-600 min-h-37.5 w-full break-all whitespace-pre-wrap overflow-y-auto resize-none"

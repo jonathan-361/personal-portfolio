@@ -9,8 +9,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Pencil } from "lucide-react";
-import type { Note } from "@/modules/core/data/dashboard.types";
+import type { Note } from "@/modules/notes/models/note.model";
 import { formatDate } from "@/lib/formatters";
+import { NOTE_THEME } from "@/modules/core/data/theme.modules";
 
 interface ViewNoteModalProps {
   isOpen: boolean;
@@ -27,7 +28,12 @@ export function ViewNoteModal({
 }: ViewNoteModalProps) {
   if (!note) return null;
 
-  const isApunte = note.type === "Apunte";
+  const typeStr = String(note.note_type);
+  const normalizedType =
+    typeStr === "NOTA" ? "Nota" : typeStr === "APUNTE" ? "Apunte" : "Nota";
+
+  const config =
+    NOTE_THEME[normalizedType as keyof typeof NOTE_THEME] || NOTE_THEME.Nota;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -36,13 +42,9 @@ export function ViewNoteModal({
           <div className="flex items-center justify-between pr-8">
             <Badge
               variant="outline"
-              className={`uppercase tracking-widest text-[10px] px-3 py-1 border-opacity-50 ${
-                isApunte
-                  ? "border-blue-500 text-blue-400 bg-blue-500/10"
-                  : "border-purple-500 text-purple-400 bg-purple-500/10"
-              }`}
+              className={`uppercase tracking-widest text-[10px] px-3 py-1 border-opacity-50 ${config.theme.border} ${config.theme.text} ${config.theme.bg}`}
             >
-              {note.type}
+              {normalizedType}
             </Badge>
             <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
               <Clock className="w-3.5 h-3.5" />
@@ -73,7 +75,7 @@ export function ViewNoteModal({
             className="w-full bg-gray-900 border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-white gap-2 transition-all active:scale-[0.98]"
           >
             <Pencil className="w-4 h-4" />
-            Editar {note.type}
+            Editar {note.note_type === "APUNTE" ? "Apunte" : "Nota"}
           </Button>
         </DialogFooter>
       </DialogContent>

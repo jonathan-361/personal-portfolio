@@ -17,7 +17,7 @@ import {
 import { CustomAside } from "@/components/custom/CustomAside";
 import { useExperienceStore } from "@/modules/core/store/experience.store";
 import { toast } from "sonner";
-import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+import type { Experience } from "@/modules/experiences/models/experience.model";
 
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
@@ -29,7 +29,7 @@ const ErrorMessage = ({ message }: { message?: string }) => {
 };
 
 interface ExperienceFormAsideProps {
-  initialData: ExperienceResponse | null;
+  initialData: Experience | null;
   onCancel: () => void;
   onSave: () => void;
 }

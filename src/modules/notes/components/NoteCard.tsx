@@ -10,8 +10,6 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onClick }: NoteCardProps) {
-  // SOLUCIÓN AL ERROR DE COMPARACIÓN:
-  // Forzamos a string para que TS no intente comparar tipos de unión literales disjuntos
   const type = String(note.note_type);
 
   const normalizedType =

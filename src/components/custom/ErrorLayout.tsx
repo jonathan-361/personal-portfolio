@@ -14,7 +14,6 @@ export const ErrorLayout = ({
   image: ErrorImage,
   title,
   message,
-  altText = "Error",
   onBack,
   resetPath,
 }: ErrorLayoutProps) => {

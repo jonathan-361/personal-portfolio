@@ -4,22 +4,22 @@ import { ExperienceFormAside } from "@/modules/experiences/components/Experience
 import { ExperienceCard } from "@/modules/experiences/components/ExperienceCard";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { useExperienceStore } from "@/modules/core/store/experience.store";
-import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+import type { Experience } from "@/modules/experiences/models/experience.model";
 
 export default function ExperiencesPage() {
   const { user } = useUserStore();
-  const { experiences, fetchExperiences, isLoading } = useExperienceStore();
+  const { experiences, fetchMyExperiences, isLoading } = useExperienceStore();
 
   const [isAsideOpen, setIsAsideOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] =
-    useState<ExperienceResponse | null>(null);
+    useState<Experience | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchExperiences(controller.signal);
+    fetchMyExperiences();
 
     return () => controller.abort();
-  }, [fetchExperiences]);
+  }, [fetchMyExperiences]);
 
   const sortedExperiences = useMemo(() => {
     return [...experiences].sort((a, b) => {
@@ -43,7 +43,7 @@ export default function ExperiencesPage() {
     setIsAsideOpen(true);
   };
 
-  const handleSelectExperience = (exp: ExperienceResponse) => {
+  const handleSelectExperience = (exp: Experience) => {
     setSelectedExperience(exp);
     setIsAsideOpen(true);
   };

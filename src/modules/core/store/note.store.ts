@@ -13,6 +13,9 @@ interface NoteState {
   isLoading: boolean;
   fetchNotes: () => Promise<void>;
   fetchMyNotes: () => Promise<void>;
+  addNoteToStore: (note: Note) => void;
+  updateNoteInStore: (id: number, updatedFields: Partial<Note>) => void;
+  removeNoteFromStore: (id: number) => void;
 }
 
 export const useNoteStore = create<NoteState>((set) => ({
@@ -57,4 +60,27 @@ export const useNoteStore = create<NoteState>((set) => ({
       set({ isLoading: false });
     }
   },
+
+  addNoteToStore: (newNote) =>
+    set((state) => ({
+      notes: [newNote, ...state.notes],
+    })),
+
+  updateNoteInStore: (id, updatedFields) =>
+    set((state) => ({
+      notes: state.notes.map((n) =>
+        n.id === id ? { ...n, ...updatedFields } : n,
+      ),
+      adminData: state.adminData.map((item) =>
+        item.content.id === id
+          ? { ...item, content: { ...item.content, ...updatedFields } }
+          : item,
+      ),
+    })),
+
+  removeNoteFromStore: (id) =>
+    set((state) => ({
+      notes: state.notes.filter((n) => n.id !== id),
+      adminData: state.adminData.filter((item) => item.content.id !== id),
+    })),
 }));

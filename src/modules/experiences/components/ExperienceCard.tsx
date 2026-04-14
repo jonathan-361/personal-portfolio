@@ -1,9 +1,9 @@
 import { Briefcase, Calendar } from "lucide-react";
 import { formatDate } from "@/lib/formatters";
-import type { ExperienceResponse } from "@/modules/experiences/models/experience.model";
+import type { Experience } from "@/modules/experiences/models/experience.model";
 
 interface ExperienceCardProps {
-  exp: ExperienceResponse;
+  exp: Experience;
   onClick: () => void;
 }
 
