@@ -25,10 +25,8 @@ export function DeleteAccountDialog() {
     setIsDeleting(true);
     try {
       await userService.deleteAccount();
-
       toast.success("Cuenta eliminada permanentemente");
 
-      // El logout se ejecuta tras el tiempo de lectura del toast
       setTimeout(() => {
         authService.logout();
       }, 1500);
@@ -42,9 +40,6 @@ export function DeleteAccountDialog() {
 
   return (
     <>
-      {/* Usamos createPortal para que el Loading se renderice fuera de este componente.
-          Esto garantiza que cubra el AlertDialog independientemente de dónde lo inyecte BASE.
-      */}
       {isDeleting &&
         createPortal(
           <Loading isFullPage={true} className="z-[10000]" />,
@@ -52,16 +47,19 @@ export function DeleteAccountDialog() {
         )}
 
       <AlertDialog>
-        <AlertDialogTrigger>
-          <Button
-            type="button"
-            variant="destructive"
-            className="w-full md:w-auto bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 transition-all gap-2"
-          >
-            <Trash2 className="w-4 h-4" />
-            Eliminar mi cuenta
-          </Button>
-        </AlertDialogTrigger>
+        {/* CORRECCIÓN 1: Usar render para evitar <button> dentro de <button> */}
+        <AlertDialogTrigger
+          render={
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-full md:w-auto bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 transition-all gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Eliminar mi cuenta
+            </Button>
+          }
+        />
 
         <AlertDialogContent className="bg-[#050505] border border-red-500/30 border-t-4 border-t-red-600 shadow-[0_0_50px_-12px_rgba(220,38,38,0.25)] p-6 rounded-2xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-red-600/[0.05] to-transparent pointer-events-none" />
@@ -82,20 +80,29 @@ export function DeleteAccountDialog() {
           </AlertDialogHeader>
 
           <AlertDialogFooter className="relative z-10 mt-8 bg-transparent border-none p-0 flex flex-col sm:flex-row gap-3">
+            {/* CORRECCIÓN 2: También en el botón de Cancelar */}
             <AlertDialogCancel
               disabled={isDeleting}
-              className="m-0 sm:flex-1 bg-white/5 border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white transition-all rounded-xl h-10"
+              render={
+                <Button
+                  variant="ghost"
+                  className="m-0 sm:flex-1 bg-white/5 border-gray-800 text-gray-400 hover:bg-gray-900 hover:text-white transition-all rounded-xl h-10"
+                />
+              }
             >
               Cancelar
             </AlertDialogCancel>
 
+            {/* CORRECCIÓN 3: En el botón de Acción (Eliminar) */}
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
                 handleDelete();
               }}
               disabled={isDeleting}
-              className="m-0 sm:flex-1 bg-red-600 hover:bg-red-700 text-white border-none transition-all shadow-lg shadow-red-600/20 rounded-xl h-10"
+              render={
+                <Button className="m-0 sm:flex-1 bg-red-600 hover:bg-red-700 text-white border-none transition-all shadow-lg shadow-red-600/20 rounded-xl h-10" />
+              }
             >
               Sí, eliminar cuenta
             </AlertDialogAction>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,12 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
   const { user, setUser } = useUserStore();
   const [loading, setLoading] = useState(false);
 
+  // Referencia al input de tipo file oculto
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Estados para la gestión de la nueva imagen
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -31,6 +37,16 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
       second_last_name: user?.second_last_name || "",
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Creamos una URL temporal para la previsualización
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
@@ -48,14 +64,20 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
     if (!user?.id) return;
     setLoading(true);
 
-    const cleanData: UpdateUserDto = {
-      names: (data.names ?? "").trim(),
-      first_last_name: (data.first_last_name ?? "").trim(),
-      second_last_name: (data.second_last_name ?? "").trim(),
-    };
+    // Importante: Usamos FormData para enviar archivos al backend
+    const formData = new FormData();
+    formData.append("names", (data.names ?? "").trim());
+    formData.append("first_last_name", (data.first_last_name ?? "").trim());
+    formData.append("second_last_name", (data.second_last_name ?? "").trim());
+
+    // Si el usuario seleccionó un archivo, lo adjuntamos con la key 'image'
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
 
     try {
-      const response = await userService.update(cleanData);
+      // El servicio ahora recibe el formData
+      const response = await userService.update(formData as any);
       setUser(response.user);
       toast.success("Perfil actualizado correctamente");
       onCancel();
@@ -81,26 +103,43 @@ export function EditProfileForm({ onCancel }: EditProfileFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col items-center mb-8">
             <div className="relative group">
+              {/* Input file oculto */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
+
               <Avatar className="w-32 h-32 rounded-2xl border-4 border-gray-900 shadow-2xl relative z-10">
                 <AvatarImage
-                  src={user?.profile_image_url || undefined}
+                  src={previewUrl || user?.profile_image_url || undefined}
                   className="object-cover"
                 />
                 <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-500 text-white text-3xl font-black rounded-xl">
                   {user ? getInitials(user) : "?"}
                 </AvatarFallback>
               </Avatar>
+
+              {/* Botón de cámara que activa el input oculto */}
               <button
                 type="button"
+                onClick={() => fileInputRef.current?.click()}
                 className="absolute -bottom-2 -right-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg z-20 transition-transform hover:scale-110 border-4 border-[#050505]"
               >
                 <Camera className="w-5 h-5" />
               </button>
             </div>
+
+            {selectedFile && (
+              <span className="mt-3 text-[10px] text-blue-400 font-mono uppercase tracking-widest animate-pulse">
+                Imagen lista para subir
+              </span>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nombres ocupando el ancho completo para mayor comodidad */}
             <div className="space-y-2 md:col-span-2">
               <Label className="text-gray-400 text-xs uppercase font-bold">
                 Nombres

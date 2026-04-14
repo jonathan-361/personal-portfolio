@@ -23,9 +23,7 @@ export const userService = {
   },
 
   // Actualizar datos del usuario
-  update: async (
-    data: UpdateUserDto,
-  ): Promise<{ message: string; user: User }> => {
+  update: async (data: FormData): Promise<{ message: string; user: User }> => {
     return await api.patch<{ message: string; user: User }>(`/users/me`, data);
   },
 

@@ -29,4 +29,5 @@ export interface UpdateUserDto {
   first_last_name?: string;
   second_last_name?: string;
   email?: string;
+  image?: File;
 }
