@@ -23,6 +23,7 @@ import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/Adm
 import AdminViewUserPage from "@/modules/admin/sections/directory/pages/AdminViewUserPage";
 import NoteSection from "@/modules/admin/sections/directory/pages/NoteSection";
 import AchievementSection from "@/modules/admin/sections/directory/pages/AchievementSection";
+import ExperienceSection from "@/modules/admin/sections/directory/pages/ExperienceSection";
 
 import Error400 from "@/components/custom/errors/error400";
 
@@ -65,7 +66,7 @@ export default function AppRouter() {
         />
         <Route
           path={paths.adminUserExperiences}
-          element={<ExperiencesPage />}
+          element={<ExperienceSection />}
         />
       </Route>
 

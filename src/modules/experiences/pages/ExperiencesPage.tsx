@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { ExperienceFormAside } from "@/modules/experiences/components/ExperienceFormAside";
-import { ExperienceCard } from "@/modules/experiences/components/ExperienceCard";
+import { ExperienceCard } from "@/components/custom/ExperienceCard";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { useExperienceStore } from "@/modules/core/store/experience.store";
 import type { Experience } from "@/modules/experiences/models/experience.model";

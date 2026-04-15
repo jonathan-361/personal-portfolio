@@ -14,7 +14,7 @@ interface SectionLayoutProps {
   children: React.ReactNode;
   sidebarSecondary?: React.ReactNode;
   isLoadingHeader?: boolean;
-  isHeaderSticky?: boolean; // Controla si el header es fijo o no
+  isHeaderSticky?: boolean;
 }
 
 export function SectionLayout({

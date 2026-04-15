@@ -149,7 +149,13 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
 
         {/* Fila de tareas y experiencias */}
         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <HomeCardSection title="Experiencia Laboral" path="/ono">
+          <HomeCardSection
+            title="Experiencia Laboral"
+            path={paths.adminUserExperiences.replace(
+              ":id",
+              targetUser.id.toString(),
+            )}
+          >
             {loadingExperiences ? (
               <div className="flex justify-center py-4">
                 <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
@@ -158,7 +164,10 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
               <ExperiencePreview currentExp={currentExperience} />
             )}
           </HomeCardSection>
-          <HomeCardSection title="Tareas Recientes" path="/ono">
+          <HomeCardSection
+            title="Tareas Recientes"
+            path={paths.adminUserTasks.replace(":id", targetUser.id.toString())}
+          >
             {loadingTasks ? (
               <div className="flex justify-center py-4">
                 <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
