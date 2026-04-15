@@ -13,8 +13,14 @@ export const taskService = {
   },
 
   // Obtener tareas (ADMIN)
-  getAll: async (searchEmail?: string): Promise<TaskResponse> => {
-    return await api.get<TaskResponse>("/tasks", { params: { searchEmail } });
+  getAll: async (
+    searchEmail?: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<TaskResponse> => {
+    return await api.get<TaskResponse>("/tasks", {
+      params: { searchEmail, page, limit },
+    });
   },
 
   // Crea una nueva tarea
