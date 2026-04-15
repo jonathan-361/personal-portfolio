@@ -13,8 +13,14 @@ export const experienceService = {
   },
 
   // Obtener experiencias (ADMIN)
-  getAll: async (signal?: AbortSignal): Promise<ExperienceResponse> => {
-    return await api.get<ExperienceResponse>("/experiences", { signal });
+  getAll: async (
+    searchEmail?: string,
+    signal?: AbortSignal,
+  ): Promise<ExperienceResponse> => {
+    return await api.get<ExperienceResponse>("/experiences", {
+      signal,
+      params: { searchEmail },
+    });
   },
 
   // Crear una nueva experiencia

@@ -15,9 +15,8 @@ interface TaskState {
   adminData: AdminTask[];
   pagination: StorePagination | null;
   isLoading: boolean;
-  fetchTasks: () => Promise<void>;
+  fetchTasks: (email?: string) => Promise<void>;
   fetchMyTasks: () => Promise<void>;
-
   updateTaskStatus: (id: number, status: Task["in_progress"]) => Promise<void>;
   updateTaskInStore: (id: number, updatedFields: Partial<Task>) => void;
   addTask: (task: Task) => void;
@@ -30,10 +29,11 @@ export const useTaskStore = create<TaskState>((set) => ({
   pagination: null,
   isLoading: false,
 
-  fetchTasks: async () => {
+  fetchTasks: async (email?: string) => {
     set({ isLoading: true });
     try {
-      const response = await taskService.getAll();
+      const searchParam = email ? email.split("@")[0] : undefined;
+      const response = await taskService.getAll(searchParam);
       const extractedTasks = response.data.map((item) => item.task);
 
       set({

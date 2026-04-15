@@ -55,6 +55,16 @@ export default function AppRouter() {
         <Route path={paths.adminHome} element={<AdminDashboardPage />} />
         <Route path={paths.adminDirectory} element={<AdminDirectoryPage />} />
         <Route path={paths.adminViewUser} element={<AdminViewUserPage />} />
+        <Route path={paths.adminUserNotes} element={<NotesPage />} />
+        <Route path={paths.adminUserTasks} element={<TasksPage />} />
+        <Route
+          path={paths.adminUserAchievements}
+          element={<AchievementsPage />}
+        />
+        <Route
+          path={paths.adminUserExperiences}
+          element={<ExperiencesPage />}
+        />
       </Route>
 
       {/* Ruta privada de perfil */}

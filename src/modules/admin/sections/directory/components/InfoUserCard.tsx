@@ -2,13 +2,18 @@ import { useEffect } from "react";
 import { Mail, ShieldCheck, ArrowLeft } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { getInitials } from "@/lib/getInitials";
 import { useNoteStore } from "@/modules/core/store/note.store";
 import { useAchievementStore } from "@/modules/core/store/achievement.store";
+import { useTaskStore } from "@/modules/core/store/task.store";
+import { useExperienceStore } from "@/modules/core/store/experience.store";
+
 import { HomeCardSection } from "@/components/custom/HomeCardSection";
 import { NotePreview } from "@/components/custom/NotePreview";
-import type { User } from "@/modules/home/models/user.model";
 import { AchievementPreview } from "@/components/custom/AchievementPreview";
+import { TaskPreview } from "@/components/custom/TaskPreview";
+import { ExperiencePreview } from "@/components/custom/ExperiencePreview";
+import type { User } from "@/modules/home/models/user.model";
+import { getInitials } from "@/lib/getInitials";
 
 interface InfoUserCardProps {
   targetUser: User;
@@ -22,13 +27,23 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
     fetchAchievements,
     isLoading: loadingAchievements,
   } = useAchievementStore();
+  const { tasks, fetchTasks, isLoading: loadingTasks } = useTaskStore();
+  const {
+    experiences,
+    fetchExperiences,
+    isLoading: loadingExperiences,
+  } = useExperienceStore();
 
   useEffect(() => {
     if (targetUser.email) {
       fetchNotes(targetUser.email);
       fetchAchievements(targetUser.email);
+      fetchTasks(targetUser.email);
+      fetchExperiences(targetUser.email);
     }
-  }, [targetUser.email, fetchNotes, fetchAchievements]);
+  }, [targetUser.email, fetchNotes, fetchAchievements, fetchTasks]);
+
+  const currentExperience = experiences[0];
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-500">
@@ -101,7 +116,7 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
 
         {/* Seccion de Notas y Logros */}
         <div className="lg:col-span-1 flex flex-col gap-6">
-          <HomeCardSection title="Notas del Estudiante">
+          <HomeCardSection title="Notas del Estudiante" path="/ono">
             {isLoading ? (
               <div className="flex justify-center py-4">
                 <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -111,7 +126,7 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
             )}
           </HomeCardSection>
 
-          <HomeCardSection title="Logros del Estudiante">
+          <HomeCardSection title="Logros del Estudiante" path="/ono">
             {loadingAchievements ? (
               <div className="flex justify-center py-6">
                 <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
@@ -124,22 +139,26 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
 
         {/* Fila de tareas y experiencias */}
         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 min-h-[150px] flex items-center justify-center">
-            <p className="text-gray-400 font-medium">
-              Contenido Columna 1 (Pendiente)
-            </p>
-          </div>
-          <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 min-h-[150px] flex items-center justify-center">
-            <p className="text-gray-400 font-medium">
-              Contenido Columna 2 (Pendiente)
-            </p>
-          </div>
+          <HomeCardSection title="Experiencia Laboral" path="/ono">
+            {loadingExperiences ? (
+              <div className="flex justify-center py-4">
+                <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <ExperiencePreview currentExp={currentExperience} />
+            )}
+          </HomeCardSection>
+          <HomeCardSection title="Tareas Recientes" path="/ono">
+            {loadingTasks ? (
+              <div className="flex justify-center py-4">
+                <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <TaskPreview tasks={tasks} />
+            )}
+          </HomeCardSection>
         </div>
       </div>
-
-      <p className="text-gray-500 italic text-sm px-2">
-        * Datos sincronizados mediante el correo: {targetUser.email}
-      </p>
     </div>
   );
 }

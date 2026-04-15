@@ -17,7 +17,7 @@ interface ExperienceState {
   pagination: StorePagination | null;
   isLoading: boolean;
 
-  fetchExperiences: (signal?: AbortSignal) => Promise<void>;
+  fetchExperiences: (email?: string, signal?: AbortSignal) => Promise<void>;
   fetchMyExperiences: () => Promise<void>;
   addExperience: (data: ExperienceFormData) => Promise<void>;
   updateExperienceInStore: (
@@ -33,11 +33,11 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   pagination: null,
   isLoading: false,
 
-  // Para Administrador
-  fetchExperiences: async (signal) => {
+  fetchExperiences: async (email, signal) => {
     set({ isLoading: true });
     try {
-      const response = await experienceService.getAll(signal);
+      const searchParam = email ? email.split("@")[0] : undefined;
+      const response = await experienceService.getAll(searchParam, signal);
       const extracted = response.data.map((item) => item.experience);
 
       set({
@@ -45,7 +45,7 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
         adminData: response.data,
         pagination: {
           ...response.pagination,
-          Total: response.pagination.total, // Mapeo para el Dashboard
+          Total: response.pagination.total,
         },
       });
     } catch (error) {
@@ -57,7 +57,6 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
     }
   },
 
-  // Para Usuario Normal
   fetchMyExperiences: async () => {
     set({ isLoading: true });
     try {
