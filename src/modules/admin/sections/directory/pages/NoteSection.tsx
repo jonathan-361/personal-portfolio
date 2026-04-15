@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, Loader2, ArrowLeft } from "lucide-react";
 import { NoteCard } from "@/components/custom/NoteCard";
-import { ViewNoteModal } from "@/components/custom/ViewNoteModal"; // Importación del modal
+import { ViewNoteModal } from "@/components/custom/ViewNoteModal";
 import { useNoteStore } from "@/modules/core/store/note.store";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";

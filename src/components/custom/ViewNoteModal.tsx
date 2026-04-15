@@ -17,8 +17,8 @@ interface ViewNoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   note: Note | null;
-  onEdit?: (note: Note) => void; // Opcional
-  onDelete?: (note: Note) => void; // Opcional
+  onEdit?: (note: Note) => void;
+  onDelete?: (note: Note) => void;
 }
 
 export function ViewNoteModal({
@@ -72,7 +72,6 @@ export function ViewNoteModal({
           </div>
         </div>
 
-        {/* El footer solo se renderiza si hay acciones disponibles */}
         {(onEdit || onDelete) && (
           <DialogFooter className="mt-6 pt-4 border-t border-gray-900 bg-black flex flex-col sm:flex-row gap-2">
             {onDelete && (

@@ -5,7 +5,6 @@ import type { Experience } from "@/modules/experiences/models/experience.model";
 export function ExperiencePreview({ currentExp }: { currentExp?: Experience }) {
   if (!currentExp) return <FallbackEmpty />;
 
-  // Usamos nuestro nuevo util
   const timeElapsed = getPreciseTimeElapsed(currentExp.start_date);
 
   return (

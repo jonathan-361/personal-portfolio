@@ -21,9 +21,10 @@ import EditProfilePage from "@/modules/profile/pages/EditProfilePage";
 import { AdminDashboardPage } from "@/modules/admin/sections/home/pages/AdminDashboardPage";
 import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/AdminDirectoryPage";
 import AdminViewUserPage from "@/modules/admin/sections/directory/pages/AdminViewUserPage";
+import NoteSection from "@/modules/admin/sections/directory/pages/NoteSection";
+import AchievementSection from "@/modules/admin/sections/directory/pages/AchievementSection";
 
 import Error400 from "@/components/custom/errors/error400";
-import NoteSection from "@/modules/admin/sections/directory/pages/NoteSection";
 
 export default function AppRouter() {
   const statusCode = useErrorStore((state) => state.statusCode);
@@ -60,7 +61,7 @@ export default function AppRouter() {
         <Route path={paths.adminUserTasks} element={<TasksPage />} />
         <Route
           path={paths.adminUserAchievements}
-          element={<AchievementsPage />}
+          element={<AchievementSection />}
         />
         <Route
           path={paths.adminUserExperiences}

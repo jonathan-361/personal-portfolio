@@ -130,7 +130,13 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
             )}
           </HomeCardSection>
 
-          <HomeCardSection title="Logros del Estudiante" path="/ono">
+          <HomeCardSection
+            title="Logros del Estudiante"
+            path={paths.adminUserAchievements.replace(
+              ":id",
+              targetUser.id.toString(),
+            )}
+          >
             {loadingAchievements ? (
               <div className="flex justify-center py-6">
                 <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
