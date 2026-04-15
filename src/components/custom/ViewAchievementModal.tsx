@@ -22,7 +22,6 @@ export function ViewAchievementModal({
 }: ViewAchievementModalProps) {
   if (!achievement) return null;
 
-  // Mapa de normalización de tipos DB -> Claves de ACHIEVEMENT_THEME
   const typeMap: Record<string, keyof typeof ACHIEVEMENT_THEME> = {
     ACADEMICO: "Académico",
     PROFESIONAL: "Profesional",
@@ -36,16 +35,14 @@ export function ViewAchievementModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-[#050505] border-gray-800 text-white shadow-2xl p-0 overflow-hidden focus:outline-none">
-        {/* Banner Superior Decorativo */}
+        {/* Banner Superior */}
         <div
           className={`h-1.5 w-full ${config.theme.bgStrong || "bg-purple-500"}`}
         />
 
-        {/* Botón de cerrar personalizado (opcional, ya que Dialog incluye uno) */}
         <div className="p-8">
           <DialogHeader className="space-y-4">
             <div className="flex items-center justify-between">
-              {/* Badge de Categoría */}
               <div
                 className={`flex items-center gap-2 px-3 py-1 rounded-full border ${config.theme.border} ${config.theme.bg} ${config.theme.text} text-[10px] font-bold uppercase tracking-widest`}
               >
@@ -53,7 +50,6 @@ export function ViewAchievementModal({
                 {themeKey}
               </div>
 
-              {/* Fecha */}
               <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>
@@ -69,8 +65,8 @@ export function ViewAchievementModal({
               </div>
             </div>
 
-            {/* Título del Logro */}
-            <DialogTitle className="text-2xl font-bold leading-tight text-white pr-6">
+            {/* Título con break-words para evitar desbordamiento horizontal */}
+            <DialogTitle className="text-2xl font-bold leading-tight text-white pr-6 break-words">
               {achievement.title}
             </DialogTitle>
 
@@ -79,9 +75,7 @@ export function ViewAchievementModal({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Contenido Principal */}
           <div className="mt-8 relative">
-            {/* Icono de fondo decorativo */}
             <Award
               className={`absolute -right-4 -top-8 w-24 h-24 ${config.theme.text} opacity-10 rotate-12`}
             />
@@ -90,15 +84,21 @@ export function ViewAchievementModal({
               <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                 Descripción
               </h4>
-              <div className="max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
-                <p className="text-gray-300 leading-relaxed text-sm whitespace-pre-wrap italic border-l-2 border-gray-800 pl-4">
+
+              {/* CONTENEDOR DE SCROLL: 
+                  Copiado exactamente de tu ViewNoteModal:
+                  - max-h-[45vh]
+                  - overflow-y-auto
+                  - overflow-x-hidden
+              */}
+              <div className="max-h-[45vh] overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words text-base italic border-l-2 border-gray-800 pl-4">
                   {achievement.description || "Sin descripción disponible."}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Espaciador final para estética */}
           <div className="mt-6" />
         </div>
       </DialogContent>

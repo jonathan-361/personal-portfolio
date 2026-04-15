@@ -36,7 +36,6 @@ export default function AchievementSection() {
   }, [usersList, id]);
 
   useEffect(() => {
-    // Si tenemos el email del usuario, traemos sus logros inmediatamente
     if (targetUser?.email) {
       fetchAchievements(targetUser.email);
     }
