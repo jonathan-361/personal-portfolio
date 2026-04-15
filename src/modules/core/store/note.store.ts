@@ -27,20 +27,32 @@ export const useNoteStore = create<NoteState>((set) => ({
   fetchNotes: async (email?: string) => {
     set({ isLoading: true });
     try {
-      let searchParam: string | undefined = undefined;
+      const searchParam = email ? email.split("@")[0] : undefined;
+      const firstResponse = await noteService.getAll(searchParam, 1);
 
-      if (email) {
-        searchParam = email.split("@")[0];
+      let cumulativeAdminData = [...firstResponse.data];
+      const { totalPages } = firstResponse.pagination;
+      if (totalPages > 1) {
+        const pagePromises = [];
+        for (let i = 2; i <= totalPages; i++) {
+          pagePromises.push(noteService.getAll(searchParam, i));
+        }
+
+        const additionalResponses = await Promise.all(pagePromises);
+        additionalResponses.forEach((res) => {
+          cumulativeAdminData = [...cumulativeAdminData, ...res.data];
+        });
       }
 
-      const response = await noteService.getAll(searchParam);
-
-      const extractedNotes = response.data.map((item) => item.content);
+      const extractedNotes = cumulativeAdminData.map((item) => item.content);
 
       set({
         notes: extractedNotes,
-        adminData: response.data,
-        pagination: response.pagination,
+        adminData: cumulativeAdminData,
+        pagination: {
+          ...firstResponse.pagination,
+          totalPages: 1,
+        },
       });
     } catch (error) {
       console.error("Error al obtener todas las notas:", error);

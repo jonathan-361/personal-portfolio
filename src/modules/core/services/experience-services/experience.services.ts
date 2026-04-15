@@ -16,10 +16,11 @@ export const experienceService = {
   getAll: async (
     searchEmail?: string,
     signal?: AbortSignal,
+    page: number = 1,
   ): Promise<ExperienceResponse> => {
     return await api.get<ExperienceResponse>("/experiences", {
       signal,
-      params: { searchEmail },
+      params: { searchEmail, page },
     });
   },
 

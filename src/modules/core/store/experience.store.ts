@@ -37,15 +37,40 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
     set({ isLoading: true });
     try {
       const searchParam = email ? email.split("@")[0] : undefined;
-      const response = await experienceService.getAll(searchParam, signal);
-      const extracted = response.data.map((item) => item.experience);
+
+      const firstResponse = await experienceService.getAll(
+        searchParam,
+        signal,
+        1,
+      );
+
+      let allAdminData = [...firstResponse.data];
+      const totalPages = firstResponse.pagination.totalPages;
+
+      if (totalPages > 1) {
+        const remainingPagesPromises = [];
+        for (let i = 2; i <= totalPages; i++) {
+          remainingPagesPromises.push(
+            experienceService.getAll(searchParam, signal, i),
+          );
+        }
+
+        const results = await Promise.all(remainingPagesPromises);
+        results.forEach((res) => {
+          allAdminData = [...allAdminData, ...res.data];
+        });
+      }
+
+      const extracted = allAdminData.map((item) => item.experience);
 
       set({
         experiences: extracted,
-        adminData: response.data,
+        adminData: allAdminData,
         pagination: {
-          ...response.pagination,
-          Total: response.pagination.total,
+          ...firstResponse.pagination,
+          total: allAdminData.length,
+          Total: allAdminData.length,
+          totalPages: 1,
         },
       });
     } catch (error) {

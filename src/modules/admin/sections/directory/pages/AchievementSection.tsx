@@ -14,23 +14,28 @@ import { ViewAchievementModal } from "@/components/custom/ViewAchievementModal";
 import { useAchievementStore } from "@/modules/core/store/achievement.store";
 import { useUserStore } from "@/modules/core/store/user.store";
 import type { Achievement } from "@/modules/achievements/models/achievement.model";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AchievementSection() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  // Stores
   const { achievements, isLoading, fetchAchievements } = useAchievementStore();
   const { user: admin, usersList } = useUserStore();
-
-  // Estados locales
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [selectedAchievement, setSelectedAchievement] =
     useState<Achievement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
-  // Obtenemos el usuario de la lista ya cargada en el store para sacar el email
   const targetUser = useMemo(() => {
     return usersList.find((u) => u.id === Number(id));
   }, [usersList, id]);
@@ -41,7 +46,6 @@ export default function AchievementSection() {
     }
   }, [targetUser?.email, fetchAchievements]);
 
-  // Filtrado lógico
   const filteredData = useMemo(() => {
     return achievements.filter((ach) => {
       const matchesSearch =
@@ -51,6 +55,17 @@ export default function AchievementSection() {
       return matchesSearch && matchesType;
     });
   }, [achievements, searchQuery, filter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filter]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentAchievements = filteredData.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   if (!admin) return null;
 
@@ -126,17 +141,73 @@ export default function AchievementSection() {
           <p className="font-medium animate-pulse">Cargando logros...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-          {filteredData.map((achievement) => (
-            <AchievementCard
-              key={achievement.id}
-              achievement={achievement}
-              onClick={() => {
-                setSelectedAchievement(achievement);
-                setIsModalOpen(true);
-              }}
-            />
-          ))}
+        <div className="flex flex-col gap-8 pb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentAchievements.length > 0 ? (
+              currentAchievements.map((achievement) => (
+                <AchievementCard
+                  key={achievement.id}
+                  achievement={achievement}
+                  onClick={() => {
+                    setSelectedAchievement(achievement);
+                    setIsModalOpen(true);
+                  }}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20 border-2 border-dashed border-gray-900 rounded-3xl">
+                <p className="text-gray-600">
+                  No se encontraron logros con los filtros seleccionados.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Componente de Paginación */}
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer text-gray-400 hover:text-white hover:bg-gray-900"
+                    }
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  />
+                </PaginationItem>
+
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem
+                    key={i + 1}
+                    className="hidden sm:inline-block"
+                  >
+                    <PaginationLink
+                      isActive={currentPage === i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className="cursor-pointer border-gray-800 text-gray-400 aria-[current]:bg-purple-600 aria-[current]:text-white"
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer text-gray-400 hover:text-white hover:bg-gray-900"
+                    }
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
 

@@ -13,14 +13,30 @@ import { useUserStore } from "@/modules/core/store/user.store";
 import { NOTE_THEME } from "@/modules/core/data/theme.modules";
 import type { Note } from "@/modules/notes/models/note.model";
 
+// Importaciones de Paginación de Shadcn/UI
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 export default function NoteSection() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // Store y Estados
   const { notes, isLoading, fetchNotes } = useNoteStore();
   const { usersList, user: admin } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("todo");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+  // Estados de Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const notesPerPage = 6; // Ajusta según prefieras (3x2, 3x3, etc.)
 
   const targetUser = useMemo(() => {
     return usersList.find((u) => u.id === Number(id));
@@ -32,6 +48,7 @@ export default function NoteSection() {
     }
   }, [targetUser?.email, fetchNotes]);
 
+  // 1. Filtrado lógico (Búsqueda + Tipo)
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
       const matchesType =
@@ -46,6 +63,19 @@ export default function NoteSection() {
       return matchesType && matchesSearch;
     });
   }, [notes, filter, searchQuery]);
+
+  // 2. Resetear a página 1 si cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchQuery]);
+
+  // 3. Cálculos de paginación local
+  const totalPages = Math.ceil(filteredNotes.length / notesPerPage);
+  const startIndex = (currentPage - 1) * notesPerPage;
+  const currentNotesSlice = filteredNotes.slice(
+    startIndex,
+    startIndex + notesPerPage,
+  );
 
   const filterOptions = [
     { id: "todo", label: "Todo", color: "bg-gray-400" },
@@ -124,27 +154,78 @@ export default function NoteSection() {
           <span className="font-medium">Volver al perfil</span>
         </button>
       </div>
+
       {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500 gap-4">
           <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
           <p className="font-medium animate-pulse">Sincronizando notas...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
-          {filteredNotes.length > 0 ? (
-            filteredNotes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                onClick={() => setSelectedNote(note)}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-20 border-2 border-dashed border-gray-900 rounded-3xl">
-              <p className="text-gray-600">
-                No hay registros disponibles para este filtro.
-              </p>
-            </div>
+        <div className="flex flex-col gap-8 pb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currentNotesSlice.length > 0 ? (
+              currentNotesSlice.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  onClick={() => setSelectedNote(note)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20 border-2 border-dashed border-gray-900 rounded-3xl">
+                <p className="text-gray-600">
+                  No hay registros disponibles para este filtro.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Renderizado Condicional de Paginación */}
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer text-gray-400 hover:text-white hover:bg-gray-900"
+                    }
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                  />
+                </PaginationItem>
+
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem
+                    key={i + 1}
+                    className="hidden sm:inline-block"
+                  >
+                    <PaginationLink
+                      isActive={currentPage === i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className="cursor-pointer border-gray-800 text-gray-400 aria-[current]:bg-blue-600 aria-[current]:text-white"
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer text-gray-400 hover:text-white hover:bg-gray-900"
+                    }
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           )}
         </div>
       )}
