@@ -3,16 +3,19 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   type ReactNode,
 } from "react";
+import { useNavigate } from "react-router";
 import type { User } from "@/modules/home/models/user.model";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { userService } from "@/modules/core/services/user-services/user.services";
+import paths from "@/modules/core/routes/paths/path";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (token: string, user: User) => void;
+  login: (token: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -26,7 +29,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  const logout = useCallback(() => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    localStorage.removeItem("user-storage");
+    localStorage.removeItem("sidebar-storage");
+    setUserState(null);
+    clearZustandUser();
+    setIsAuthenticated(false);
+    navigate(paths.login, { replace: true });
+  }, [clearZustandUser, navigate]);
+
+  // Escucha cuando el interceptor de Axios detecta un 401
+  useEffect(() => {
+    const handleForcedLogout = () => logout();
+    window.addEventListener("auth:logout", handleForcedLogout);
+    return () => window.removeEventListener("auth:logout", handleForcedLogout);
+  }, [logout]);
+
+  // Al montar, valida el token con el servidor
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem("auth_token");
@@ -36,39 +59,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUserState(freshUser);
           setZustandUser(freshUser);
           setIsAuthenticated(true);
-        } catch (error) {
-          console.error("Token inválido o expirado");
+        } catch {
           logout();
         }
       }
       setLoading(false);
     };
     initAuth();
-  }, [setZustandUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Solo al montar
 
   const login = async (token: string) => {
     localStorage.setItem("auth_token", token);
-
     try {
       const freshUser = await userService.getMe();
-
-      localStorage.setItem("auth_user", JSON.stringify(freshUser));
       setUserState(freshUser);
       setZustandUser(freshUser);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error("Error al obtener datos tras login:", error);
+    } catch {
       logout();
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
-    localStorage.removeItem("user-storage");
-    setUserState(null);
-    clearZustandUser();
-    setIsAuthenticated(false);
   };
 
   return (

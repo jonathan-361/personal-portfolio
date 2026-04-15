@@ -15,20 +15,20 @@ import { Button } from "@/components/ui/button";
 import { Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { userService } from "@/modules/core/services/user-services/user.services";
-import { authService } from "@/modules/core/services/auth-services/auth.services";
 import Loading from "@/components/custom/Loading";
+import { useAuth } from "@/modules/core/context/AuthContext";
 
 export function DeleteAccountDialog() {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { logout } = useAuth();
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
       await userService.deleteAccount();
       toast.success("Cuenta eliminada permanentemente");
-
       setTimeout(() => {
-        authService.logout();
+        logout();
       }, 1500);
     } catch (error: any) {
       const msg =

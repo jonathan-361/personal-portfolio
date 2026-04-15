@@ -7,11 +7,11 @@ function App() {
   return (
     <>
       <Toaster position="top-right" richColors closeButton />
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <AppRouter />
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </>
   );
 }

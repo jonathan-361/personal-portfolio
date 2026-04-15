@@ -6,18 +6,14 @@ import type {
   LoginResponse,
   RegisterResponse,
 } from "@/modules/auth/models/auth.model";
-import paths from "../../routes/paths/path";
 
 export const authService = {
   login: async (data: LoginFormData): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("/auth/login", data);
-
-    if (response.token && response.user) {
-      useUserStore.getState().setUser(response.user);
+    // Solo guardamos el token; el contexto se encarga del resto
+    if (response.token) {
       localStorage.setItem("auth_token", response.token);
-      localStorage.setItem("auth_user", JSON.stringify(response.user));
     }
-
     return response;
   },
 
@@ -28,14 +24,9 @@ export const authService = {
 
   logout: () => {
     localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
+    localStorage.removeItem("auth_user"); // lo dejamos por si acaso, para limpiar legacy
     localStorage.removeItem("user-storage");
     localStorage.removeItem("sidebar-storage");
-
     useUserStore.getState().clearUser();
-
-    if (!window.location.pathname.includes(paths.login)) {
-      window.location.href = paths.login;
-    }
   },
 };
