@@ -1,5 +1,5 @@
 const paths = {
-  test: "/",
+  main: "/",
   test2: "/test",
   login: "/login",
   changePassword: "/change-password",
@@ -13,6 +13,7 @@ const paths = {
   editProfile: "/profile/edit",
   adminHome: "/admin/dashboard",
   adminDirectory: "/admin/directory",
+  adminViewUser: "/admin/directory/:id",
 };
 
 export default paths;

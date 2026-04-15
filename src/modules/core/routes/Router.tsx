@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import paths from "@/modules/core/routes/paths/path";
 import { ProtectedRoute } from "@/modules/core/routes/ProtectedRoute";
@@ -19,9 +20,9 @@ import EditProfilePage from "@/modules/profile/pages/EditProfilePage";
 
 import { AdminDashboardPage } from "@/modules/admin/sections/home/pages/AdminDashboardPage";
 import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/AdminDirectoryPage";
+import AdminViewUserPage from "@/modules/admin/sections/directory/pages/AdminViewUserPage";
 
 import Error400 from "@/components/custom/errors/error400";
-import { useEffect } from "react";
 
 export default function AppRouter() {
   const statusCode = useErrorStore((state) => state.statusCode);
@@ -33,6 +34,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route element={<PublicRoute />}>
+        <Route path={paths.main} element={<Navigate to={paths.login} />} />
         <Route path={paths.test2} element={<Error400 />} />
         <Route path={paths.login} element={<LoginPage />} />
         <Route path={paths.register} element={<RegisterPage />} />
@@ -52,6 +54,7 @@ export default function AppRouter() {
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
         <Route path={paths.adminHome} element={<AdminDashboardPage />} />
         <Route path={paths.adminDirectory} element={<AdminDirectoryPage />} />
+        <Route path={paths.adminViewUser} element={<AdminViewUserPage />} />
       </Route>
 
       {/* Ruta privada de perfil */}

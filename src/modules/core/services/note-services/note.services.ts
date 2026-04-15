@@ -12,8 +12,8 @@ export const noteService = {
   },
 
   // Obtener notas (ADMIN)
-  getAll: async (): Promise<NoteResponse> => {
-    return await api.get<NoteResponse>("/notes");
+  getAll: async (searchEmail?: string): Promise<NoteResponse> => {
+    return await api.get<NoteResponse>("/notes", { params: { searchEmail } });
   },
 
   // Agregar nota

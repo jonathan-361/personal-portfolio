@@ -17,6 +17,7 @@ import FormField from "@/components/custom/FormField";
 import Loading from "@/components/custom/Loading";
 import { useUserStore } from "@/modules/core/store/user.store";
 import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
+import image from "@/assets/login.jpg";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -56,11 +57,12 @@ export default function LoginPage() {
 
   return (
     <>
-      <AuthLayout title="Iniciar sesión">
+      <AuthLayout title="Iniciar sesión" imageUrl={image}>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
           noValidate
+          autoComplete="off"
         >
           <FormField
             label="Correo electrónico"

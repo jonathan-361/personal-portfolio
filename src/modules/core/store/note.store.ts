@@ -11,7 +11,7 @@ interface NoteState {
   adminData: AdminNote[];
   pagination: Pagination | null;
   isLoading: boolean;
-  fetchNotes: () => Promise<void>;
+  fetchNotes: (email?: string) => Promise<void>;
   fetchMyNotes: () => Promise<void>;
   addNoteToStore: (note: Note) => void;
   updateNoteInStore: (id: number, updatedFields: Partial<Note>) => void;
@@ -24,10 +24,16 @@ export const useNoteStore = create<NoteState>((set) => ({
   pagination: null,
   isLoading: false,
 
-  fetchNotes: async () => {
+  fetchNotes: async (email?: string) => {
     set({ isLoading: true });
     try {
-      const response = await noteService.getAll();
+      let searchParam: string | undefined = undefined;
+
+      if (email) {
+        searchParam = email.split("@")[0];
+      }
+
+      const response = await noteService.getAll(searchParam);
 
       const extractedNotes = response.data.map((item) => item.content);
 

@@ -40,7 +40,11 @@ export function StepResetPassword({
     <>
       {isLoading && <Loading isFullPage={true} />}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-2 space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="p-6 pt-2 space-y-6"
+        autoComplete="off"
+      >
         <div className="text-center">
           <h2 className="text-xl font-bold mb-2 text-slate-800">
             Verificar código

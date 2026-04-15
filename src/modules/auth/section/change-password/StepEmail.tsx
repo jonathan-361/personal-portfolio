@@ -34,6 +34,7 @@ export function StepEmail({ onSubmit, isLoading }: StepEmailProps) {
           isLoading ? "opacity-60" : "opacity-100"
         }`}
         noValidate
+        autoComplete="off"
       >
         <div>
           <h2 className="text-xl font-bold mb-2 text-slate-800">

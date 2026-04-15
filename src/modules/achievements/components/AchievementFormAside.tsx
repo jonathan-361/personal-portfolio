@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CustomAside } from "@/components/custom/CustomAside";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CustomAside } from "@/components/custom/CustomAside";
+import { ConfirmDialog } from "@/components/custom/ConfirmDialog";
 import Loading from "@/components/custom/Loading";
 import { Edit3, Trash2, Save, Calendar, Loader2 } from "lucide-react";
 import { ACHIEVEMENT_THEME } from "@/modules/core/data/theme.modules";
@@ -44,6 +45,8 @@ export function AchievementFormAside({
   } = useAchievementStore();
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(!initialData);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const themeToDbMap: Record<string, string> = {
     Académico: "ACADEMICO",
@@ -126,17 +129,12 @@ export function AchievementFormAside({
 
   const handleDelete = async () => {
     if (!initialData) return;
-
-    const confirmDelete = confirm(
-      "¿Estás seguro de que deseas eliminar este logro?",
-    );
-    if (!confirmDelete) return;
-    setIsGlobalLoading(true);
-
+    setIsDeleting(true);
     try {
       await achievementService.delete(initialData.id);
       removeAchievementFromStore(initialData.id);
       toast.success("Logro eliminado correctamente");
+      setIsDeleteDialogOpen(false);
       onSave();
     } catch (error) {
       toast.error("No se pudo eliminar el logro");
@@ -288,7 +286,7 @@ export function AchievementFormAside({
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={handleDelete}
+                  onClick={() => setIsDeleteDialogOpen(true)}
                   className="text-red-500 hover:bg-red-600/10 hover:text-white font-bold gap-2"
                 >
                   <Trash2 className="w-4 h-4" /> Borrar
@@ -322,6 +320,16 @@ export function AchievementFormAside({
           </div>
         </form>
       </CustomAside>
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="¿Eliminar logro?"
+        description={`Estás a punto de eliminar "${initialData?.title}". Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Volver"
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+      />
       {isGlobalLoading && <Loading />}
     </>
   );

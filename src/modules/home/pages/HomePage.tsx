@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { StatCard } from "@/modules/home/components/StatCard";
-import { HomeCardSection } from "@/modules/home/components/HomeSectionCard";
+import { HomeCardSection } from "@/components/custom/HomeCardSection";
 
-import { NotePreview } from "@/modules/home/components/NotePreview";
-import { TaskPreview } from "../components/TaskPreview";
-import { AchievementPreview } from "@/modules/home/components/AchievementPreview";
-import { ExperiencePreview } from "@/modules/home/components/ExperiencePreview";
+import { NotePreview } from "@/components/custom/NotePreview";
+import { TaskPreview } from "../../../components/custom/TaskPreview";
+import { AchievementPreview } from "@/components/custom/AchievementPreview";
+import { ExperiencePreview } from "@/components/custom/ExperiencePreview";
 
 import { useUserStore } from "@/modules/core/store/user.store";
 import { useNoteStore } from "@/modules/core/store/note.store";

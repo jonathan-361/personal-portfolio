@@ -10,7 +10,7 @@ import {
 } from "../../schemas/register.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
 import paths from "@/modules/core/routes/paths/path";
-
+import image from "@/assets/register.jpg";
 import { Button } from "@/components/ui/button";
 import { AuthLayout } from "../../components/AuthLayout";
 import FormField from "@/components/custom/FormField";
@@ -43,13 +43,14 @@ function RegisterPage() {
   };
 
   return (
-    <AuthLayout title="Crea tu cuenta" contentPosition="right">
+    <AuthLayout title="Crea tu cuenta" contentPosition="right" imageUrl={image}>
       {isLoading && <Loading />}
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-2 gap-4"
         noValidate
+        autoComplete="off"
       >
         <div className="col-span-2">
           <FormField

@@ -13,7 +13,7 @@ export const userService = {
 
   // Obtener todos los usuarios (ADMIN)
   getAll: async (
-    params?: { role?: string; page?: number; limit?: number },
+    params?: { role?: string; page?: number; limit?: number; search?: string },
     signal?: AbortSignal,
   ): Promise<UsersResponse> => {
     return await api.get<UsersResponse>("/users", {

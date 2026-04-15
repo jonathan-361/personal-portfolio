@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router";
 import { SectionLayout } from "@/components/custom/SectionLayout";
 import { useAuth } from "@/modules/core/context/AuthContext";
 import { useUserStore } from "@/modules/core/store/user.store";
@@ -28,9 +29,8 @@ import {
 } from "@/components/ui/pagination";
 
 export function AdminDirectoryPage() {
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-
-  // Stores
   const { user, usersList, pagination, setUsersData } = useUserStore();
   const { adminData: allNotes, fetchNotes } = useNoteStore();
   const { adminData: allTasks, fetchTasks } = useTaskStore();
@@ -115,7 +115,6 @@ export function AdminDirectoryPage() {
                 </tr>
               ) : (
                 filteredUsers.map((u) => {
-                  // Calculamos los totales por usuario usando adminData de los stores
                   const noteCount = allNotes.filter(
                     (n) => n.user.id === u.id,
                   ).length;
@@ -130,7 +129,15 @@ export function AdminDirectoryPage() {
                   ).length;
 
                   return (
-                    <tr key={u.id} className={DIRECTORY_THEME.table.row}>
+                    <tr
+                      key={u.id}
+                      className={DIRECTORY_THEME.table.row}
+                      onClick={() =>
+                        navigate(`/admin/directory/${u.id}`, {
+                          state: { email: u.email },
+                        })
+                      }
+                    >
                       {/* USUARIO */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
