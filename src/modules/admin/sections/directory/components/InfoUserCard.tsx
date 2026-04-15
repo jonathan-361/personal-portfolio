@@ -14,6 +14,7 @@ import { TaskPreview } from "@/components/custom/TaskPreview";
 import { ExperiencePreview } from "@/components/custom/ExperiencePreview";
 import type { User } from "@/modules/home/models/user.model";
 import { getInitials } from "@/lib/getInitials";
+import paths from "@/modules/core/routes/paths/path";
 
 interface InfoUserCardProps {
   targetUser: User;
@@ -116,7 +117,10 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
 
         {/* Seccion de Notas y Logros */}
         <div className="lg:col-span-1 flex flex-col gap-6">
-          <HomeCardSection title="Notas del Estudiante" path="/ono">
+          <HomeCardSection
+            title="Notas del Estudiante"
+            path={paths.adminUserNotes.replace(":id", targetUser.id.toString())}
+          >
             {isLoading ? (
               <div className="flex justify-center py-4">
                 <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />

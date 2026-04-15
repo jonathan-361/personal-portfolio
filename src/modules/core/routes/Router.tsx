@@ -23,6 +23,7 @@ import { AdminDirectoryPage } from "@/modules/admin/sections/directory/pages/Adm
 import AdminViewUserPage from "@/modules/admin/sections/directory/pages/AdminViewUserPage";
 
 import Error400 from "@/components/custom/errors/error400";
+import NoteSection from "@/modules/admin/sections/directory/pages/NoteSection";
 
 export default function AppRouter() {
   const statusCode = useErrorStore((state) => state.statusCode);
@@ -55,7 +56,7 @@ export default function AppRouter() {
         <Route path={paths.adminHome} element={<AdminDashboardPage />} />
         <Route path={paths.adminDirectory} element={<AdminDirectoryPage />} />
         <Route path={paths.adminViewUser} element={<AdminViewUserPage />} />
-        <Route path={paths.adminUserNotes} element={<NotesPage />} />
+        <Route path={paths.adminUserNotes} element={<NoteSection />} />
         <Route path={paths.adminUserTasks} element={<TasksPage />} />
         <Route
           path={paths.adminUserAchievements}
