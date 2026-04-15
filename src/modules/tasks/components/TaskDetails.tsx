@@ -11,16 +11,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -196,7 +186,8 @@ export function TaskDetails({ isOpen, onClose, task }: TaskDetailsProps) {
                     description: e.target.value,
                   }))
                 }
-                className={`${theme.input} min-h-[120px] max-h-[200px] resize-none text-sm overflow-y-auto custom-scrollbar
+                className={`${theme.input} min-h-[120px] max-h-[200px] resize-none text-sm 
+                           overflow-y-auto custom-scrollbar break-all whitespace-pre-wrap leading-relaxed
                            ${!isEditing ? readOnlyStyles : ""}`}
                 placeholder="Sin descripción..."
               />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SectionLayout } from "@/components/custom/SectionLayout";
-import { TaskCard } from "../components/TaskCard";
+import { TaskCard } from "@/modules/tasks/components/TaskCard";
 import { TaskFormAside } from "../components/TaskFormAside";
 import { useTaskStore } from "@/modules/core/store/task.store";
 import { useUserStore } from "@/modules/core/store/user.store";

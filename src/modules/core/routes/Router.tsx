@@ -24,6 +24,7 @@ import AdminViewUserPage from "@/modules/admin/sections/directory/pages/AdminVie
 import NoteSection from "@/modules/admin/sections/directory/pages/NoteSection";
 import AchievementSection from "@/modules/admin/sections/directory/pages/AchievementSection";
 import ExperienceSection from "@/modules/admin/sections/directory/pages/ExperienceSection";
+import TaskSection from "@/modules/admin/sections/directory/pages/TaskSection";
 
 import Error400 from "@/components/custom/errors/error400";
 
@@ -59,7 +60,7 @@ export default function AppRouter() {
         <Route path={paths.adminDirectory} element={<AdminDirectoryPage />} />
         <Route path={paths.adminViewUser} element={<AdminViewUserPage />} />
         <Route path={paths.adminUserNotes} element={<NoteSection />} />
-        <Route path={paths.adminUserTasks} element={<TasksPage />} />
+        <Route path={paths.adminUserTasks} element={<TaskSection />} />
         <Route
           path={paths.adminUserAchievements}
           element={<AchievementSection />}
