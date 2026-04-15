@@ -10,6 +10,7 @@ import { useExperienceStore } from "@/modules/core/store/experience.store";
 import { userService } from "@/modules/core/services/user-services/user.services";
 import { getInitials } from "@/lib/getInitials";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import {
   Mail,
   Users,
@@ -17,6 +18,8 @@ import {
   CheckSquare,
   Trophy,
   Briefcase,
+  Search,
+  X,
 } from "lucide-react";
 import { DIRECTORY_THEME } from "@/modules/core/data/theme.modules";
 import {
@@ -31,7 +34,8 @@ import {
 export function AdminDirectoryPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { user, usersList, pagination, setUsersData } = useUserStore();
+  const { user, usersList, pagination, setUsersData, searchUsers } =
+    useUserStore();
   const { adminData: allNotes, fetchNotes } = useNoteStore();
   const { adminData: allTasks, fetchTasks } = useTaskStore();
   const { adminData: allAchievements, fetchAchievements } =
@@ -40,26 +44,41 @@ export function AdminDirectoryPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) return;
+
+    const loadData = async () => {
       setIsLoading(true);
-      // Carga inicial de datos para conteos y tabla
-      Promise.all([
-        userService.getAll({ page: currentPage, limit: 10 }),
-        fetchNotes(),
-        fetchTasks(),
-        fetchAchievements(),
-        fetchExperiences(),
-      ])
-        .then(([resUsers]) => {
+      try {
+        if (searchQuery.trim().length > 0) {
+          await searchUsers(searchQuery);
+        } else {
+          const resUsers = await userService.getAll({
+            page: currentPage,
+            limit: 10,
+          });
           setUsersData(resUsers.data, resUsers.pagination);
-        })
-        .finally(() => setIsLoading(false));
-    }
+        }
+        await Promise.all([
+          fetchNotes(),
+          fetchTasks(),
+          fetchAchievements(),
+          fetchExperiences(),
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const timer = setTimeout(loadData, searchQuery ? 500 : 0);
+    return () => clearTimeout(timer);
   }, [
     isAuthenticated,
     currentPage,
+    searchQuery,
+    searchUsers,
     setUsersData,
     fetchNotes,
     fetchTasks,
@@ -67,7 +86,6 @@ export function AdminDirectoryPage() {
     fetchExperiences,
   ]);
 
-  // Filtrar para no mostrar admins en la lista
   const filteredUsers = useMemo(() => {
     return usersList.filter((u) => u.role !== "ADMIN");
   }, [usersList]);
@@ -82,8 +100,33 @@ export function AdminDirectoryPage() {
       showButton={false}
     >
       <div className={DIRECTORY_THEME.container}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        {/* BUSCADOR */}
+        <div className="mb-10 relative group">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-cyan-500 transition-colors">
+            <Search className="w-4 h-4" />
+          </div>
+          <Input
+            placeholder="Buscar por correo electrónico (ej: ricardo@...)"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="pl-10 bg-gray-900/50 border-gray-800 text-white placeholder:text-gray-600 focus-visible:ring-cyan-500/50 focus-visible:border-cyan-500/50"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* CONTENEDOR DE TABLA CON ALTURA DINÁMICA */}
+        <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/20">
+          <table className="w-full text-left border-collapse table-auto">
             <thead>
               <tr className={DIRECTORY_THEME.table.header}>
                 <th className="px-6 py-4 font-semibold">Estudiante</th>
@@ -98,7 +141,7 @@ export function AdminDirectoryPage() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="py-20 text-center text-gray-500 animate-pulse"
+                    className="py-10 text-center text-gray-500 animate-pulse"
                   >
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-20" />
                     Cargando información...
@@ -108,7 +151,7 @@ export function AdminDirectoryPage() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="py-20 text-center text-gray-500 italic"
+                    className="py-12 text-center text-gray-500 italic"
                   >
                     No hay usuarios registrados.
                   </td>
@@ -138,7 +181,6 @@ export function AdminDirectoryPage() {
                         })
                       }
                     >
-                      {/* USUARIO */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10 rounded-lg border border-white/5 shadow-inner">
@@ -163,7 +205,6 @@ export function AdminDirectoryPage() {
                         </div>
                       </td>
 
-                      {/* EMAIL */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-gray-400 text-sm">
                           <Mail className="w-3.5 h-3.5 text-cyan-500/50" />
@@ -171,7 +212,6 @@ export function AdminDirectoryPage() {
                         </div>
                       </td>
 
-                      {/* ACTIVIDAD (REEMPLAZO DE ROL Y ACCIONES) */}
                       <td className="px-6 py-4">
                         <div className="flex justify-center items-center gap-4">
                           <StatBadge
@@ -208,55 +248,58 @@ export function AdminDirectoryPage() {
           </table>
         </div>
 
-        {/* PAGINACIÓN */}
-        <div className={DIRECTORY_THEME.pagination.wrapper}>
-          <Pagination>
-            <PaginationContent className="w-full flex justify-between sm:justify-center gap-2">
-              <PaginationItem>
-                <PaginationPrevious
-                  className={`cursor-pointer ${currentPage === 1 ? "pointer-events-none opacity-50" : "hover:text-cyan-400"}`}
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                />
-              </PaginationItem>
-
-              <div className="hidden sm:flex items-center gap-1">
-                {Array.from(
-                  { length: pagination?.totalPages || 0 },
-                  (_, i) => i + 1,
-                ).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      isActive={currentPage === page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`cursor-pointer ${currentPage === page ? DIRECTORY_THEME.pagination.active : DIRECTORY_THEME.pagination.inactive}`}
-                    >
-                      {page}
-                    </PaginationLink>
+        {/* PAGINACIÓN CONDICIONAL: Solo si hay registros y más de 1 página */}
+        {!isLoading &&
+          filteredUsers.length > 0 &&
+          (pagination?.totalPages ?? 0) > 1 && (
+            <div className={DIRECTORY_THEME.pagination.wrapper}>
+              <Pagination>
+                <PaginationContent className="w-full flex justify-between sm:justify-center gap-2">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      className={`cursor-pointer ${currentPage === 1 ? "pointer-events-none opacity-50" : "hover:text-cyan-400"}`}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                    />
                   </PaginationItem>
-                ))}
-              </div>
 
-              <PaginationItem>
-                <PaginationNext
-                  className={`cursor-pointer ${currentPage === pagination?.totalPages ? "pointer-events-none opacity-50" : "hover:text-cyan-400"}`}
-                  onClick={() =>
-                    setCurrentPage((prev) =>
-                      Math.min(prev + 1, pagination?.totalPages || 1),
-                    )
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+                  <div className="hidden sm:flex items-center gap-1">
+                    {Array.from(
+                      { length: pagination?.totalPages || 0 },
+                      (_, i) => i + 1,
+                    ).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={currentPage === page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`cursor-pointer ${currentPage === page ? DIRECTORY_THEME.pagination.active : DIRECTORY_THEME.pagination.inactive}`}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                  </div>
+
+                  <PaginationItem>
+                    <PaginationNext
+                      className={`cursor-pointer ${currentPage === pagination?.totalPages ? "pointer-events-none opacity-50" : "hover:text-cyan-400"}`}
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, pagination?.totalPages || 1),
+                        )
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
       </div>
     </SectionLayout>
   );
 }
 
-// Componente pequeño para mostrar las estadísticas en la tabla
 function StatBadge({ icon: Icon, count, color, label }: any) {
   return (
     <div className="flex flex-col items-center group" title={label}>
