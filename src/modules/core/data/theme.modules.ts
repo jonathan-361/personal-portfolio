@@ -8,6 +8,36 @@ import {
   CheckSquare,
 } from "lucide-react";
 
+// Tema de Login y Register
+export const AUTH_THEME = {
+  login: {
+    title: "text-white",
+    accent: "text-indigo-500",
+    button:
+      "bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_20px_rgba(79,70,229,0.2)]",
+    link: "text-indigo-400 hover:text-indigo-300",
+    input:
+      "bg-black/40 border-gray-800 focus:border-cyan-500/50 text-white placeholder:text-gray-500",
+    label: "text-gray-400",
+    border: "border-t-4 border-t-indigo-500",
+    glow: "shadow-[0_0_40px_rgba(79,70,229,0.1)]",
+    labelField: "text-white/90",
+  },
+  register: {
+    title: "text-white",
+    accent: "text-cyan-500",
+    button:
+      "bg-cyan-600 hover:bg-cyan-700 shadow-[0_0_20px_rgba(6,182,212,0.2)]",
+    link: "text-cyan-400 hover:text-cyan-300",
+    input:
+      "bg-black/40 border-gray-800 focus:border-cyan-500/50 text-white placeholder:text-gray-500",
+    label: "text-gray-400",
+    border: "border-t-4 border-t-cyan-500",
+    glow: "shadow-[0_0_40px_rgba(6,182,212,0.1)]",
+    labelField: "text-white/90",
+  },
+} as const;
+
 // Tipo de color para el módulo de notas
 export const NOTE_THEME = {
   Apunte: {

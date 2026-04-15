@@ -8,6 +8,7 @@ interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   inputRef?: React.Ref<HTMLInputElement>;
   allowSpaces?: boolean;
+  labelColor?: string; // Prop opcional para el color del label
 }
 
 const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
@@ -19,6 +20,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
       error,
       inputRef,
       allowSpaces = true,
+      labelColor = "text-gray-400", // Valor por defecto (gris suave)
       onKeyDown,
       ...props
     },
@@ -41,7 +43,9 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
 
     return (
       <div className="space-y-2">
-        <Label className="text-sm font-medium">{label}</Label>
+        <Label className={`text-sm font-semibold tracking-wide ${labelColor}`}>
+          {label}
+        </Label>
 
         <div className="relative">
           <Input
@@ -50,16 +54,16 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             placeholder={placeholder}
             ref={ref || inputRef}
             onKeyDown={handleKeyDown}
-            className={`bg-slate-50 border-input/70 focus:border-primary pr-10 ${
+            className={`pr-10 transition-all duration-300 ${
               error ? "border-red-500 focus:ring-red-500" : ""
-            }`}
+            } ${props.className}`}
           />
 
           {isPassword && (
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
               tabIndex={-1}
             >
               {showPassword ? (
@@ -72,7 +76,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
         </div>
 
         {error && (
-          <p className="text-red-500 text-xs font-medium leading-tight animate-in fade-in slide-in-from-top-1">
+          <p className="text-red-500 text-[11px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-top-1">
             {error}
           </p>
         )}
