@@ -3,10 +3,12 @@ import { Mail, ShieldCheck, ArrowLeft } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getInitials } from "@/lib/getInitials";
-import { useNoteStore } from "@/modules/core/store/note.store"; // Importar Store
+import { useNoteStore } from "@/modules/core/store/note.store";
+import { useAchievementStore } from "@/modules/core/store/achievement.store";
 import { HomeCardSection } from "@/components/custom/HomeCardSection";
 import { NotePreview } from "@/components/custom/NotePreview";
 import type { User } from "@/modules/home/models/user.model";
+import { AchievementPreview } from "@/components/custom/AchievementPreview";
 
 interface InfoUserCardProps {
   targetUser: User;
@@ -15,12 +17,18 @@ interface InfoUserCardProps {
 
 export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
   const { notes, fetchNotes, isLoading } = useNoteStore();
+  const {
+    achievements,
+    fetchAchievements,
+    isLoading: loadingAchievements,
+  } = useAchievementStore();
 
   useEffect(() => {
     if (targetUser.email) {
       fetchNotes(targetUser.email);
+      fetchAchievements(targetUser.email);
     }
-  }, [targetUser.email, fetchNotes]);
+  }, [targetUser.email, fetchNotes, fetchAchievements]);
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-500">
@@ -36,22 +44,24 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Columna Izquierda: Perfil y Datos */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 flex flex-col md:flex-row items-center md:items-start gap-8">
-            <Avatar className="w-32 h-32 rounded-2xl border-2 border-white/10 shadow-xl overflow-hidden shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Tarjeta de Perfil */}
+          <div className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800 flex flex-col md:flex-row items-center md:items-center gap-8 flex-1 justify-center">
+            <Avatar className="w-36 h-36 rounded-2xl border-2 border-white/10 shadow-xl overflow-hidden shrink-0">
               <AvatarImage
                 src={targetUser.profile_image_url || undefined}
                 alt={targetUser.names}
+                className="object-cover w-full h-full rounded-2xl"
               />
-              <AvatarFallback className="bg-indigo-700 text-3xl font-bold text-white rounded-2xl">
+              <AvatarFallback className="bg-indigo-700 text-4xl font-bold text-white rounded-2xl">
                 {getInitials(targetUser)}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex flex-col text-center md:text-left justify-center min-h-[128px]">
-              <h2 className="text-3xl font-bold text-white mb-1">
+            {/* Información Principal */}
+            <div className="flex flex-col text-center md:text-left justify-center flex-1">
+              <h2 className="text-4xl font-bold text-white mb-1 tracking-tight">
                 {`${targetUser.names} ${targetUser.first_last_name} ${targetUser.second_last_name}`}
               </h2>
               <p className="text-indigo-400 text-sm font-semibold uppercase tracking-widest mb-4">
@@ -75,7 +85,7 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
                 <p className="text-xs text-gray-500 uppercase mb-1">
                   ID de Registro
                 </p>
-                <p className="text-white text-lg">{targetUser.id}</p>
+                <p className="text-white text-lg font-mono">{targetUser.id}</p>
               </div>
               <div className="p-4 bg-white/5 rounded-xl border border-white/5">
                 <p className="text-xs text-gray-500 uppercase mb-1">
@@ -89,8 +99,8 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
           </div>
         </div>
 
-        {/* Columna Derecha: Notas del Usuario (Admin View) */}
-        <div className="lg:col-span-1">
+        {/* Seccion de Notas y Logros */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
           <HomeCardSection title="Notas del Estudiante">
             {isLoading ? (
               <div className="flex justify-center py-4">
@@ -100,6 +110,30 @@ export function InfoUserCard({ targetUser, onBack }: InfoUserCardProps) {
               <NotePreview notes={notes} />
             )}
           </HomeCardSection>
+
+          <HomeCardSection title="Logros del Estudiante">
+            {loadingAchievements ? (
+              <div className="flex justify-center py-6">
+                <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <AchievementPreview achievements={achievements} />
+            )}
+          </HomeCardSection>
+        </div>
+
+        {/* Fila de tareas y experiencias */}
+        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 min-h-[150px] flex items-center justify-center">
+            <p className="text-gray-400 font-medium">
+              Contenido Columna 1 (Pendiente)
+            </p>
+          </div>
+          <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 min-h-[150px] flex items-center justify-center">
+            <p className="text-gray-400 font-medium">
+              Contenido Columna 2 (Pendiente)
+            </p>
+          </div>
         </div>
       </div>
 

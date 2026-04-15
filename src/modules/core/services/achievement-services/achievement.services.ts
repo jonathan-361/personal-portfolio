@@ -14,8 +14,10 @@ export const achievementService = {
   },
 
   // Obtener logros (ADMIN)
-  getAll: async (): Promise<AchievementResponse> => {
-    return await api.get<AchievementResponse>("/achievements");
+  getAll: async (searchEmail?: string): Promise<AchievementResponse> => {
+    return await api.get<AchievementResponse>("/achievements", {
+      params: { searchEmail },
+    });
   },
 
   // Crear nuevo logro

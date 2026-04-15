@@ -15,7 +15,7 @@ interface AchievementState {
   adminData: AdminAchievement[];
   pagination: StorePagination | null;
   isLoading: boolean;
-  fetchAchievements: () => Promise<void>;
+  fetchAchievements: (email?: string) => Promise<void>;
   fetchMyAchievements: () => Promise<void>;
   addAchievement: (achievement: Achievement) => void;
   updateAchievementInStore: (
@@ -31,10 +31,11 @@ export const useAchievementStore = create<AchievementState>((set) => ({
   pagination: null,
   isLoading: false,
 
-  fetchAchievements: async () => {
+  fetchAchievements: async (email?: string) => {
     set({ isLoading: true });
     try {
-      const response = await achievementService.getAll();
+      const searchParam = email ? email.split("@")[0] : undefined;
+      const response = await achievementService.getAll(searchParam);
       const extracted = response.data.map((item) => item.achievement);
 
       set({
