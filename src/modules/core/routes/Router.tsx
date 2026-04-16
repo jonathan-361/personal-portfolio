@@ -27,6 +27,13 @@ import ExperienceSection from "@/modules/admin/sections/directory/pages/Experien
 import TaskSection from "@/modules/admin/sections/directory/pages/TaskSection";
 
 import Error400 from "@/components/custom/errors/error400";
+import Error401 from "@/components/custom/errors/Error401";
+import Error403 from "@/components/custom/errors/error403";
+import Error500 from "@/components/custom/errors/error500";
+import Error501 from "@/components/custom/errors/Error501";
+import Error502 from "@/components/custom/errors/Error502";
+import Error503 from "@/components/custom/errors/Error503";
+import Error404 from "@/components/custom/errors/error404";
 
 export default function AppRouter() {
   const statusCode = useErrorStore((state) => state.statusCode);
@@ -39,7 +46,7 @@ export default function AppRouter() {
     <Routes>
       <Route element={<PublicRoute />}>
         <Route path={paths.main} element={<Navigate to={paths.login} />} />
-        <Route path={paths.test2} element={<Error400 />} />
+        <Route path={paths.test2} element={<Error500 />} />
         <Route path={paths.login} element={<LoginPage />} />
         <Route path={paths.register} element={<RegisterPage />} />
         <Route path={paths.changePassword} element={<ChangePassword />} />

@@ -10,7 +10,7 @@ const Error401 = ({ onBack }: ErrorProps) => {
     <ErrorLayout
       image={errorImg}
       title="Solicitud Incorrecta"
-      message="No tienes permiso para acceder a este recurso. Verifica que hayas iniciado sesión con las credenciales correctas."
+      message="¡No tienes permiso para acceder a este lugar!"
       onBack={onBack}
     />
   );

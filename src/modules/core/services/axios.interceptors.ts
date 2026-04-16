@@ -22,13 +22,11 @@ export const responseInterceptor = (response: AxiosResponse) => {
 
 export const responseErrorInterceptor = (error: AxiosError) => {
   if (error.response?.status === 401) {
-    // Limpiamos storage directamente, sin importar authService (evita ciclo circular)
     localStorage.removeItem("auth_token");
     localStorage.removeItem("auth_user");
     localStorage.removeItem("user-storage");
     localStorage.removeItem("sidebar-storage");
 
-    // Disparamos un evento custom para que el AuthContext reaccione
     window.dispatchEvent(new Event("auth:logout"));
   }
   return Promise.reject(error);

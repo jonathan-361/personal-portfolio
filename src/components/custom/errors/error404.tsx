@@ -10,7 +10,7 @@ const Error404 = ({ onBack }: ErrorProps) => {
     <ErrorLayout
       image={errorImg}
       title="Solicitud Incorrecta"
-      message="La página que buscas no existe o ha sido movida. Verifica la URL o vuelve a la página principal."
+      message="¡Oh! La página que buscas no existe o ha sido movida."
       onBack={onBack}
     />
   );

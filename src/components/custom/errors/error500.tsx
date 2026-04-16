@@ -10,7 +10,7 @@ const Error500 = ({ onBack }: ErrorProps) => {
     <ErrorLayout
       image={errorImg}
       title="Solicitud Incorrecta"
-      message="Ha ocurrido un error interno en el servidor. Por favor, inténtalo de nuevo más tarde."
+      message="¡Oh no! Ha ocurrido un error interno en el servidor. Por favor, inténtalo de nuevo más tarde."
       onBack={onBack}
     />
   );

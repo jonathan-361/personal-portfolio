@@ -10,7 +10,7 @@ const Error400 = ({ onBack }: ErrorProps) => {
     <ErrorLayout
       image={errorImg}
       title="Solicitud Incorrecta"
-      message="La solicitud que enviaste contiene datos inválidos o incorrectos."
+      message="Parece que lo que enviaste contiene datos inválidos o incorrectos."
       onBack={onBack}
     />
   );

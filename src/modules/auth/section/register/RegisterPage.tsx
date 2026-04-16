@@ -60,7 +60,7 @@ function RegisterPage() {
       >
         <div className="col-span-2">
           <FormField
-            label="Nombre completo"
+            label="Nombre(s)"
             {...register("names")}
             error={errors.names?.message}
             className={theme.input}
