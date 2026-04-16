@@ -20,9 +20,9 @@ const paths = {
   achievement: "/achievement",
   tasks: "/tasks",
   experiences: "/experiences",
-<<<<<<< HEAD
 
-=======
+
+
   profile: "/profile",
   editProfile: "/profile/edit",
   adminHome: "/admin/dashboard",
@@ -32,7 +32,7 @@ const paths = {
   adminUserTasks: "/admin/directory/:id/tasks",
   adminUserAchievements: "/admin/directory/:id/achievements",
   adminUserExperiences: "/admin/directory/:id/experiences",
->>>>>>> 137771318df34e9efa563eb3079b62fa1873a627
+
 };
 
 export default paths;
