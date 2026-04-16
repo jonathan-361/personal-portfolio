@@ -1,12 +1,20 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../context/AuthContext";
-import paths from "./paths/path";
+import { useAuth } from "@/modules/core/context/AuthContext";
+import paths from "@/modules/core/routes/paths/path";
 
-export const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+}
 
-  if (!isAuthenticated) {
+export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+  const { isAuthenticated, user } = useAuth();
+  const hasToken = !!localStorage.getItem("auth_token");
+  if (!isAuthenticated || !hasToken) {
     return <Navigate to={paths.login} replace />;
+  }
+
+  if (allowedRoles && user && !allowedRoles.includes(user.role || "")) {
+    return <Navigate to={paths.test2} replace />;
   }
 
   return <Outlet />;

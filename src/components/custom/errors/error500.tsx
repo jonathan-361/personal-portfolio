@@ -1,20 +1,19 @@
-import ErrorSVG from "@/assets/svg/Error500.svg";
+import errorImg from "@/assets/svg/Error500.svg?react";
+import { ErrorLayout } from "@/components/custom/ErrorLayout";
 
-import { Button } from "@/components/ui/button";
+interface ErrorProps {
+  onBack?: () => void;
+}
 
-export const Error500 = () => {
+const Error500 = ({ onBack }: ErrorProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#E2DEDF] px-8">
-      <div className="flex flex-col items-center justify-center gap-8 max-w-md">
-        <img src={ErrorSVG} alt="Error 500" className="w-96 h-96 drop-white-lg" />
-        
-            Ha ocurrido un error interno en el servidor. 
-            Por favor, inténtalo de nuevo más tarde.
-      
-        <Button>
-          Volver Atrás
-        </Button>
-      </div>
-    </div>
+    <ErrorLayout
+      image={errorImg}
+      title="Solicitud Incorrecta"
+      message="Ha ocurrido un error interno en el servidor. Por favor, inténtalo de nuevo más tarde."
+      onBack={onBack}
+    />
   );
 };
+
+export default Error500;

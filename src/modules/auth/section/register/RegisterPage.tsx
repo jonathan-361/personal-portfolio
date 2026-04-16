@@ -5,21 +5,24 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
-
+import { toast } from "sonner";
 import {
   registerSchema,
   type RegisterFormData,
-} from "../../schemas/register_schema";
+} from "../../schemas/register.schema";
 import { authService } from "@/modules/core/services/auth-services/auth.services";
-
 import paths from "@/modules/core/routes/paths/path";
+import image from "@/assets/register.jpg";
 import { Button } from "@/components/ui/button";
-import FormField from "@/components/custom/FormField";
 import { AuthLayout } from "../../components/AuthLayout";
+import FormField from "@/components/custom/FormField";
+import Loading from "@/components/custom/Loading";
+import { AUTH_THEME } from "@/modules/core/data/theme.modules";
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const theme = AUTH_THEME.register;
 
   const {
     register,
@@ -31,105 +34,74 @@ function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
     try {
-      const response = await authService.register(data);
-      console.log("Registro exitoso:", response);
+      await authService.register(data);
+      toast.success("Cuenta creada exitosamente");
       navigate(paths.login);
     } catch (error: any) {
-      console.error("Error en el registro:", {
-        status: error.response?.status,
-        message: error.response?.data?.message || "Error desconocido",
-      });
+      toast.error(error.response?.data?.message || "Error al registrar");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const namesField = register("names");
-  const firstLastnameField = register("first_lastname");
-  const secondLastnameField = register("second_lastname");
-  const emailField = register("email");
-  const passwordField = register("password");
-  const repeatPasswordField = register("repeat_password");
-
   return (
-    <AuthLayout title="Crea tu cuenta" contentPosition="right">
+    <AuthLayout
+      title="Registro de Usuario"
+      contentPosition="right"
+      imageUrl={image}
+      variant="register"
+    >
+      {isLoading && <Loading isFullPage />}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-4"
+        className="grid grid-cols-2 gap-x-4 gap-y-5"
         noValidate
+        autoComplete="off"
       >
         <div className="col-span-2">
           <FormField
-            label="Nombre(s)"
-            type="text"
-            placeholder="Escribe tu nombre"
-            name={namesField.name}
-            onChange={namesField.onChange}
-            onBlur={namesField.onBlur}
-            inputRef={namesField.ref}
+            label="Nombre completo"
+            {...register("names")}
             error={errors.names?.message}
+            className={theme.input}
+            labelColor={theme.labelField}
+            placeholder="Ej. Ricardo Pérez"
           />
         </div>
-        <div>
-          <FormField
-            label="Apellido paterno"
-            type="text"
-            placeholder="Escribe tu primer apellido"
-            name={firstLastnameField.name}
-            onChange={firstLastnameField.onChange}
-            onBlur={firstLastnameField.onBlur}
-            inputRef={firstLastnameField.ref}
-            error={errors.first_lastname?.message}
-          />
-        </div>
-        <div>
-          <FormField
-            label="Apellido materno"
-            type="text"
-            placeholder="Escribe tu segundo apellido"
-            name={secondLastnameField.name}
-            onChange={secondLastnameField.onChange}
-            onBlur={secondLastnameField.onBlur}
-            inputRef={secondLastnameField.ref}
-            error={errors.second_lastname?.message}
-          />
-        </div>
+
+        <FormField
+          label="Primer Apellido"
+          {...register("first_last_name")}
+          error={errors.first_last_name?.message}
+          className={theme.input}
+          labelColor={theme.labelField}
+          placeholder="Apellido paterno"
+        />
+        <FormField
+          label="Segundo Apellido"
+          {...register("second_last_name")}
+          error={errors.second_last_name?.message}
+          className={theme.input}
+          labelColor={theme.labelField}
+          placeholder="Apellido materno"
+        />
+
         <div className="col-span-2">
           <FormField
             label="Correo electrónico"
             type="email"
-            placeholder="Escribe tu correo"
-            name={emailField.name}
-            onChange={emailField.onChange}
-            onBlur={emailField.onBlur}
-            inputRef={emailField.ref}
+            {...register("email")}
             error={errors.email?.message}
-          />
-        </div>
-        <div>
-          <FormField
-            label="Contraseña"
-            type="password"
-            placeholder="Escribe tu contraseña"
-            name={passwordField.name}
-            onChange={passwordField.onChange}
-            onBlur={passwordField.onBlur}
-            inputRef={passwordField.ref}
-            error={errors.password?.message}
-          />
-        </div>
-        <div>
-          <FormField
-            label="Confirmar contraseña"
-            type="password"
-            placeholder="Repite tu contraseña"
-            name={repeatPasswordField.name}
-            onChange={repeatPasswordField.onChange}
-            onBlur={repeatPasswordField.onBlur}
-            inputRef={repeatPasswordField.ref}
-            error={errors.repeat_password?.message}
+            className={theme.input}
+            labelColor={theme.labelField}
+            placeholder="usuario@ejemplo.com"
           />
         </div>
 
+<<<<<<< HEAD
 
         <FormField label="Nombre Completo" name="name" type="text" placeholder="Tu nombre aquí" value={formData.name} onChange={handleChange} />
 
@@ -142,17 +114,41 @@ function RegisterPage() {
         <p className="text-center text-sm text-muted-foreground">¿Ya tienes cuenta? <a href="/login" className="text-primary hover:underline font-medium">Inicia sesión</a></p>
 
         <Button type="submit" className="w-full h-10 col-span-2">
+=======
+        <FormField
+          label="Contraseña"
+          type="password"
+          {...register("password")}
+          error={errors.password?.message}
+          className={theme.input}
+          labelColor={theme.labelField}
+          placeholder="••••••••"
+        />
+        <FormField
+          label="Confirmar"
+          type="password"
+          {...register("repeat_password")}
+          error={errors.repeat_password?.message}
+          className={theme.input}
+          labelColor={theme.labelField}
+          placeholder="••••••••"
+        />
+
+        <Button
+          type="submit"
+          className={`w-full h-12 col-span-2 font-bold rounded-xl transition-all duration-300 mt-2 ${theme.button}`}
+          disabled={isLoading}
+        >
+>>>>>>> 137771318df34e9efa563eb3079b62fa1873a627
           Crear cuenta
         </Button>
 
       </form>
-      <div>
-        <p className="text-center text-sm text-muted-foreground">
-          ¿Ya tienes cuenta?{" "}
-          <Link
-            to={paths.login}
-            className="text-primary hover:underline font-medium"
-          >
+
+      <div className="mt-8 pt-6 border-t border-gray-800/50 text-center">
+        <p className="text-sm text-gray-500">
+          ¿Ya tienes una cuenta?{" "}
+          <Link to={paths.login} className={`font-bold ${theme.link}`}>
             Inicia sesión
           </Link>
         </p>

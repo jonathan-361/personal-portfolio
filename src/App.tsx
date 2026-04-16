@@ -5,12 +5,14 @@ import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
-    <AuthProvider>
+    <>
+      <Toaster position="top-right" richColors closeButton />
       <BrowserRouter>
-        <AppRouter />
-        <Toaster position="top-right" richColors closeButton />
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
       </BrowserRouter>
-    </AuthProvider>
+    </>
   );
 }
 

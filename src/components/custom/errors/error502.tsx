@@ -1,19 +1,19 @@
-import ErrorSVG from "@/assets/svg/Error502.svg";
+import errorImg from "@/assets/svg/Error502.svg?react";
+import { ErrorLayout } from "@/components/custom/ErrorLayout";
 
-import { Button } from "@/components/ui/button";
+interface ErrorProps {
+  onBack?: () => void;
+}
 
-export const Error502 = () => {
+const Error502 = ({ onBack }: ErrorProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#E2DEDF] px-8">
-      <div className="flex flex-col items-center justify-center gap-8 max-w-md">
-        <img src={ErrorSVG} alt="Error 502" className="w-96 h-96 drop-white-lg" />
-        
-            Ups… hubo un problema al cargar esta página. Intenta de nuevo en unos segundos.
-      
-        <Button>
-          Volver Atrás
-        </Button>
-      </div>
-    </div>
+    <ErrorLayout
+      image={errorImg}
+      title="Solicitud Incorrecta"
+      message="Ups… hubo un problema al cargar esta página. Intenta de nuevo en unos segundos."
+      onBack={onBack}
+    />
   );
 };
+
+export default Error502;

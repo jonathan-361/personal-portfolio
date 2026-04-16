@@ -1,79 +1,134 @@
-import { useState } from "react";
-import { Sidebar } from "@/components/custom/Sidebar";
+import { useState, useEffect } from "react";
+import { SectionLayout } from "@/components/custom/SectionLayout";
+import { StatCard } from "@/modules/home/components/StatCard";
+import { HomeCardSection } from "@/components/custom/HomeCardSection";
 
-import {
-  userMock,
-  notesMock,
-  achievementsMock,
-  tasksMock,
-  experiencesMock,
-} from "@/modules/core/data/dashboard.data";
+import { NotePreview } from "@/components/custom/NotePreview";
+import { TaskPreview } from "../../../components/custom/TaskPreview";
+import { AchievementPreview } from "@/components/custom/AchievementPreview";
+import { ExperiencePreview } from "@/components/custom/ExperiencePreview";
 
-import type {
-  User,
-  Note,
-  Achievement,
-  Task,
-  Experience,
-} from "@/modules/core/data/dashboard.types";
-import { toast } from "sonner";
-
-// Helpers
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-MX");
-}
+import { useUserStore } from "@/modules/core/store/user.store";
+import { useNoteStore } from "@/modules/core/store/note.store";
+import { useTaskStore } from "@/modules/core/store/task.store";
+import { useAchievementStore } from "@/modules/core/store/achievement.store";
+import { useExperienceStore } from "@/modules/core/store/experience.store";
+import { userService } from "@/modules/core/services/user-services/user.services";
+import paths from "@/modules/core/routes/paths/path";
+import { getFirstNameLastName } from "@/lib/getFirstNameLastName";
 
 export default function HomePage() {
-  const [user] = useState<User>(userMock);
-  const [notes] = useState<Note[]>(notesMock);
-  const [achievements] = useState<Achievement[]>(achievementsMock);
-  const [tasks] = useState<Task[]>(tasksMock);
-  const [experiences] = useState<Experience[]>(experiencesMock);
+  const { user, setUser } = useUserStore();
+  const { notes, fetchMyNotes } = useNoteStore();
+  const { tasks, fetchMyTasks } = useTaskStore();
+  const { achievements, fetchMyAchievements } = useAchievementStore();
+  const { experiences, fetchMyExperiences } = useExperienceStore();
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(!user);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          !user
+            ? userService.getMe(controller.signal).then(setUser)
+            : Promise.resolve(),
+          fetchMyNotes(),
+
+          fetchMyTasks(),
+          fetchMyAchievements(),
+          fetchMyExperiences(),
+        ]);
+      } catch (error: any) {
+        if (error.name !== "CanceledError" && error.name !== "AbortError") {
+          console.error("Error cargando estadísticas:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+    return () => controller.abort();
+  }, [
+    setUser,
+    user,
+    fetchMyNotes,
+    fetchMyTasks,
+    fetchMyAchievements,
+    fetchMyExperiences,
+  ]);
+
+  const currentExp = experiences.find((e) => !e.end_date);
+
+  if (loading && !user) {
+    return (
+      <div className="bg-[#0a0a0a] h-screen flex items-center justify-center text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-400 animate-pulse">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const formattedName = getFirstNameLastName(user as any);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <Sidebar
-        user={user}
-        isOpen={sidebarOpen}
-        toggle={() => setSidebarOpen(!sidebarOpen)}
-      />
+    <SectionLayout
+      user={user as any}
+      title={`Hola, ${formattedName}`}
+      subtitle={user.email}
+      showButton={false}
+    >
+      <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Notas"
+            value={notes.length ?? notes.length}
+            type="notes"
+          />
 
-      <main className="flex-1 p-6 space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold">Hola, {user.first_name}</h1>
-          <p className="text-sm text-gray-500">{user.email}</p>
+          <StatCard
+            title="Logros"
+            value={achievements.length ?? achievements.length}
+            type="achievements"
+          />
+          <StatCard
+            title="Tareas"
+            value={tasks.length ?? tasks.length}
+            type="tasks"
+          />
+
+          <StatCard
+            title="Experiencia"
+            value={experiences.length ?? experiences.length}
+            type="experiences"
+          />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded shadow">
-            Notas: {notes.length}
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            Logros: {achievements.length}
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            Tareas: {tasks.length}
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            Experiencias: {experiences.length}
-          </div>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <HomeCardSection title="Notas Recientes" path={paths.notes}>
+            <NotePreview notes={notes} />
+          </HomeCardSection>
 
-        {/* Notas */}
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="font-semibold mb-2">Notas</h2>
-          {notes.map((n) => (
-            <p key={n.id}>
-              {n.title} - {formatDate(n.created_at)}
-            </p>
-          ))}
+          <HomeCardSection title="Próximas Tareas" path={paths.tasks}>
+            <TaskPreview tasks={tasks} />
+          </HomeCardSection>
+
+          <HomeCardSection title="Logros Recientes" path={paths.achievement}>
+            <AchievementPreview achievements={achievements} />
+          </HomeCardSection>
+
+          <HomeCardSection title="Experiencia Actual" path={paths.experiences}>
+            <ExperiencePreview currentExp={currentExp} />
+          </HomeCardSection>
         </div>
-      </main>
-    </div>
+      </div>
+    </SectionLayout>
   );
 }

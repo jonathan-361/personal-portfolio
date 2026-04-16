@@ -1,6 +1,6 @@
 const paths = {
-  test: "/",
-  test2: "test",
+  main: "/",
+  test2: "/test",
   login: "/login",
   changePassword: "/change-password",
   register: "/register",
@@ -20,7 +20,19 @@ const paths = {
   achievement: "/achievement",
   tasks: "/tasks",
   experiences: "/experiences",
+<<<<<<< HEAD
 
+=======
+  profile: "/profile",
+  editProfile: "/profile/edit",
+  adminHome: "/admin/dashboard",
+  adminDirectory: "/admin/directory",
+  adminViewUser: "/admin/directory/:id",
+  adminUserNotes: "/admin/directory/:id/notes",
+  adminUserTasks: "/admin/directory/:id/tasks",
+  adminUserAchievements: "/admin/directory/:id/achievements",
+  adminUserExperiences: "/admin/directory/:id/experiences",
+>>>>>>> 137771318df34e9efa563eb3079b62fa1873a627
 };
 
 export default paths;
